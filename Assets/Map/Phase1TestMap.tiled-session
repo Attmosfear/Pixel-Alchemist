@@ -1,0 +1,44 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Maptest.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "Tous les Fichiers (*)",
+    "fileStates": {
+        "Maptest.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 299.33333333333326,
+                "y": 624.6666666666667
+            }
+        },
+        "TileSetTest.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "C:/Users/desch/PycharmProjects/Pixel-Alchemist/Assets/Map",
+    "map.lastUsedFormat": "tmx",
+    "map.renderOrder": "3",
+    "map.tileHeight": 32,
+    "map.tileWidth": 32,
+    "openFiles": [
+        "TileSetTest.tsx",
+        "Maptest.tmx"
+    ],
+    "project": "Phase1TestMap.tiled-project",
+    "recentFiles": [
+        "TileSetTest.tsx",
+        "Maptest.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.margin": 0,
+    "tileset.tileSize": {
+        "height": 32,
+        "width": 32
+    }
+}
