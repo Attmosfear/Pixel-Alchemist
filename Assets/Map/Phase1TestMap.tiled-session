@@ -3,17 +3,31 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Maptest.tmx",
+    "activeFile": "SecondMaptest.tmx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "Tous les Fichiers (*)",
     "fileStates": {
         "Maptest.tmx": {
-            "scale": 0.75,
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 141.25,
+                "y": 119.25
+            }
+        },
+        "SecondMaptest.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 299.33333333333326,
-                "y": 624.6666666666667
+                "x": 141.75,
+                "y": 100.75
             }
         },
         "TileSetTest.tsx": {
@@ -22,18 +36,22 @@
         }
     },
     "last.imagePath": "C:/Users/desch/PycharmProjects/Pixel-Alchemist/Assets/Map",
+    "map.height": 7,
     "map.lastUsedFormat": "tmx",
     "map.renderOrder": "3",
     "map.tileHeight": 32,
     "map.tileWidth": 32,
+    "map.width": 10,
     "openFiles": [
         "TileSetTest.tsx",
-        "Maptest.tmx"
+        "Maptest.tmx",
+        "SecondMaptest.tmx"
     ],
     "project": "Phase1TestMap.tiled-project",
     "recentFiles": [
         "TileSetTest.tsx",
-        "Maptest.tmx"
+        "Maptest.tmx",
+        "SecondMaptest.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.margin": 0,
