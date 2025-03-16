@@ -10,10 +10,13 @@ class Game:
         self.running = True
         self.clock = pygame.time.Clock()
 
+        self.native_surface = pygame.Surface((NATIVE_WIDTH, NATIVE_HEIGHT))
+
+
         # Chargement de la carte
         tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Maptest.tmx")
         map_date = pyscroll.data.TiledMapData(tmx_data)
-        map_layer = pyscroll.orthographic.BufferedRenderer(map_date, self.screen.get_size())
+        map_layer = pyscroll.orthographic.BufferedRenderer(map_date, (NATIVE_WIDTH, NATIVE_HEIGHT))
 
         #Chargement du joueur
         self.player = Player(30,30)
@@ -25,7 +28,7 @@ class Game:
             if obj.type == "collision":
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
         # Ajout des bords de l'écran comme des collisions
-        screen_width, screen_height = self.screen.get_size()
+        screen_width, screen_height = NATIVE_WIDTH, NATIVE_HEIGHT
         self.walls.append(pygame.Rect(-5, 0, 5, screen_height))
         self.walls.append(pygame.Rect(screen_width, 0, 5, screen_height))
         self.walls.append(pygame.Rect(0, -5, screen_width, 5))
@@ -66,9 +69,15 @@ class Game:
                 sprite.move_back()
 
     def display(self):
+        self.native_surface.fill((100, 100, 100))
         self.group.update()
         self.group.center(self.player.rect.center)
-        self.group.draw(self.screen)
+        self.group.draw(self.native_surface)
+
+        # Redimensionner la surface et l'afficher sur l'écran
+        scaled_surface = pygame.transform.scale(self.native_surface, (WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.screen.blit(scaled_surface, (0, 0))
+
         pygame.display.flip()
 
     def run(self):
@@ -79,8 +88,16 @@ class Game:
             self.display()
             self.clock.tick(60)
 
+"""Gestion du scaling de l'ecran"""
+#Taille native de la carte
+NATIVE_WIDTH, NATIVE_HEIGHT = 320, 224
+#Taille de la fenetre affichée
+SCALE = 3 # Definir dans les parametres du jeu ou en fonction de l'ecran du joueur
+WINDOW_WIDTH = NATIVE_WIDTH * SCALE
+WINDOW_HEIGHT = NATIVE_HEIGHT * SCALE
+
 pygame.init()
 pygame.display.set_caption("Pixel-Alchemist")
-screen = pygame.display.set_mode((320, 224))
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 game = Game(screen)
 game.run()
