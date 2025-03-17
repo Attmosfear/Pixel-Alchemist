@@ -4,7 +4,7 @@ import pygame
 pygame.init()
 
 #Dimension fenêtre
-largeur,hauteur = 800,600
+largeur,hauteur = 1180 ,676
 screen2 = pygame.display.set_mode((largeur,hauteur))
 pygame.display.set_caption('Pixel Alchemist')
 
@@ -16,7 +16,7 @@ class Ennemi:
         self.x = 0 #Pour commencer à gauche
         self.y = random.randint(100,hauteur-100) #Pour avoir une position aléatoire
         self.rayon = 20
-        self.vitesse = random.uniform(2,4)
+        self.vitesse = random.uniform(2,5)
 
 
     def mouvement(self):

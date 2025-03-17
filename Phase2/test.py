@@ -4,6 +4,7 @@ ennemis = [Ennemi() for _ in range(5)] #Création de 5 ennemis
 running = True
 temps = pygame.time.Clock()
 background = pygame.image.load("background.png")
+background = pygame.transform.scale(background, (largeur, hauteur))
 
 while running:
     screen2.blit(background, (0, 0))
