@@ -3,7 +3,7 @@ import pygame
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.sprite_sheet = pygame.image.load('Assets/Art/playerTest.png').convert()
+        self.sprite_sheet = pygame.image.load('../Assets/Art/playerTest.png').convert()
         self.image = self.get_image(0,0)
         self.rect = self.image.get_rect()
         self.position = [x, y]

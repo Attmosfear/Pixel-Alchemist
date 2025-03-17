@@ -14,7 +14,7 @@ class Game:
 
 
         # Chargement de la carte
-        tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Maptest.tmx")
+        tmx_data = pytmx.util_pygame.load_pygame("../Assets/Map/Maptest.tmx")
         map_date = pyscroll.data.TiledMapData(tmx_data)
         map_layer = pyscroll.orthographic.BufferedRenderer(map_date, (NATIVE_WIDTH, NATIVE_HEIGHT))
 
@@ -27,6 +27,7 @@ class Game:
         for obj in tmx_data.objects:
             if obj.type == "collision":
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+
         # Ajout des bords de l'écran comme des collisions
         screen_width, screen_height = NATIVE_WIDTH, NATIVE_HEIGHT
         self.walls.append(pygame.Rect(-5, 0, 5, screen_height))
