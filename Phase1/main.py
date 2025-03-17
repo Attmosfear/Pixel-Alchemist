@@ -1,5 +1,7 @@
 import pygame
 import pyscroll
+from pygame.examples.cursors import image
+
 from player import Player
 import pytmx
 
@@ -17,32 +19,35 @@ class Game:
         self.screen = screen
         self.running = True
         self.clock = pygame.time.Clock()
+
         self.native_surface = pygame.Surface((NATIVE_WIDTH, NATIVE_HEIGHT))
+
 
         # Chargement de la carte
         tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Maptest.tmx")
-        map_data = pyscroll.data.TiledMapData(tmx_data)
-        map_layer = pyscroll.orthographic.BufferedRenderer(map_data, (NATIVE_WIDTH, NATIVE_HEIGHT))
+        map_date = pyscroll.data.TiledMapData(tmx_data)
+        map_layer = pyscroll.orthographic.BufferedRenderer(map_date, (NATIVE_WIDTH, NATIVE_HEIGHT))
 
-        # Chargement du joueur
-        self.player = Player(30, 30)
+        #Chargement du joueur
+        self.player = Player(30,30)
 
         # Chargement du glaçon
         self.ice = Ice(100, 100)
 
         """Gestion des collisions"""
+        # Recuperation des rectangles de collision dans une liste
         self.walls = []
         for obj in tmx_data.objects:
             if obj.type == "collision":
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-
+        # Ajout des bords de l'écran comme des collisions
         screen_width, screen_height = NATIVE_WIDTH, NATIVE_HEIGHT
         self.walls.append(pygame.Rect(-5, 0, 5, screen_height))
         self.walls.append(pygame.Rect(screen_width, 0, 5, screen_height))
         self.walls.append(pygame.Rect(0, -5, screen_width, 5))
         self.walls.append(pygame.Rect(0, screen_height, screen_width, 5))
 
-        # Dessiner le groupe de calques
+        #Dessiner le groupe de calques
         self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
         self.group.add(self.player, self.ice)
 
@@ -52,7 +57,6 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.player.velocity[0] = -1
@@ -80,6 +84,8 @@ class Game:
             self.ice.rect.topleft = self.player.rect.topleft
 
     def update(self):
+
+        # Déplacement du joueur
         self.player.move()
         self.player.update()
 
@@ -87,7 +93,7 @@ class Game:
             self.ice.rect.center = self.player.rect.center
 
         for sprite in self.group.sprites():
-            if hasattr(sprite, 'feet') and sprite.feet.collidelist(self.walls) > -1:
+            if sprite.feet.collidelist(self.walls) > -1:
                 sprite.move_back()
 
     def display(self):
@@ -95,8 +101,11 @@ class Game:
         self.group.update()
         self.group.center(self.player.rect.center)
         self.group.draw(self.native_surface)
+
+        # Redimensionner la surface et l'afficher sur l'écran
         scaled_surface = pygame.transform.scale(self.native_surface, (WINDOW_WIDTH, WINDOW_HEIGHT))
         self.screen.blit(scaled_surface, (0, 0))
+
         pygame.display.flip()
 
     def run(self):
@@ -107,10 +116,11 @@ class Game:
             self.display()
             self.clock.tick(60)
 
-
-# Gestion du scaling de l'écran
+"""Gestion du scaling de l'ecran"""
+#Taille native de la carte
 NATIVE_WIDTH, NATIVE_HEIGHT = 320, 224
-SCALE = 3
+#Taille de la fenetre affichée
+SCALE = 3 # Definir dans les parametres du jeu ou en fonction de l'ecran du joueur
 WINDOW_WIDTH = NATIVE_WIDTH * SCALE
 WINDOW_HEIGHT = NATIVE_HEIGHT * SCALE
 
