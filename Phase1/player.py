@@ -11,7 +11,8 @@ class Player(pygame.sprite.Sprite):
         self.velocity = [0, 0]
         self.feet = pygame.Rect(0,0, self.rect.width * 0.5, 12)
         self.old_position = self.position.copy()
-
+        # Ajout d’un inventaire pour porter un objet
+        self.held_item = None
 
 
     def save_location(self): self.old_position = self.position.copy()
@@ -33,3 +34,21 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.rect.topleft = self.position
         self.feet.midbottom = self.rect.midbottom
+
+    """Gestion des objets"""
+    def pick_up(self, item):
+        #Le joueur prend un objet s’il n’en porte pas déjà un
+        if self.held_item is None:
+            self.held_item = item
+            print(f"Objet ramassé : {item}")
+
+
+    def drop_item(self):
+        #Le joueur dépose son objet sur la table de craft
+        if self.held_item:
+            print(f"Objet {self.held_item} posé")
+            item = self.held_item
+            self.held_item = None  # Vide les mains du joueur
+            return item
+        return None  # Aucun objet à poser
+

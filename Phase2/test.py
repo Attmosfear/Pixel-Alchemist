@@ -3,7 +3,7 @@ from mainP2 import *
 ennemis = [Ennemi() for _ in range(5)] #Création de 5 ennemis
 running = True
 temps = pygame.time.Clock()
-background = pygame.image.load("Phase2\First_background_im.png")
+background = pygame.image.load("background.png")
 
 while running:
     screen2.blit(background, (0, 0))

@@ -1,15 +1,15 @@
 import pygame
 import pyscroll
+from pygame.examples.cursors import image
+
 from player import Player
 import pytmx
-
 
 class Game:
     def __init__(self, screen):
         self.screen = screen
         self.running = True
         self.clock = pygame.time.Clock()
-
         self.native_surface = pygame.Surface((NATIVE_WIDTH, NATIVE_HEIGHT))
 
 
