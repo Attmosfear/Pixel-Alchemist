@@ -14,6 +14,7 @@ class Player(pygame.sprite.Sprite):
         # Ajout d’un inventaire pour porter un objet
         self.held_item = None
 
+
     def save_location(self): self.old_position = self.position.copy()
 
     def get_image(self, x, y):
