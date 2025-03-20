@@ -4,21 +4,34 @@ import pyscroll
 from player import Player
 import pytmx
 
+
+class Ice(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.image.load("Assets/Map/ice.png").convert_alpha()
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.held = False
+
+
 class Game:
     def __init__(self, screen):
         self.screen = screen
         self.running = True
         self.clock = pygame.time.Clock()
+
         self.native_surface = pygame.Surface((NATIVE_WIDTH, NATIVE_HEIGHT))
 
 
         # Chargement de la carte
-        tmx_data = pytmx.util_pygame.load_pygame("../Assets/Map/Maptest.tmx")
+        tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Maptest.tmx")
         map_date = pyscroll.data.TiledMapData(tmx_data)
         map_layer = pyscroll.orthographic.BufferedRenderer(map_date, (NATIVE_WIDTH, NATIVE_HEIGHT))
 
         #Chargement du joueur
         self.player = Player(30,30)
+
+        # Chargement du glaçon
+        self.ice = Ice(100, 100)
 
         """Gestion des collisions"""
         # Recuperation des rectangles de collision dans une liste
@@ -26,7 +39,6 @@ class Game:
         for obj in tmx_data.objects:
             if obj.type == "collision":
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-
         # Ajout des bords de l'écran comme des collisions
         screen_width, screen_height = NATIVE_WIDTH, NATIVE_HEIGHT
         self.walls.append(pygame.Rect(-5, 0, 5, screen_height))
@@ -36,7 +48,9 @@ class Game:
 
         #Dessiner le groupe de calques
         self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
-        self.group.add(self.player)
+        self.group.add(self.player, self.ice)
+
+        self.holding_ice = False
 
     def handling_events(self):
         for event in pygame.event.get():
@@ -57,13 +71,26 @@ class Game:
         else:
             self.player.velocity[1] = 0
 
+        # Interaction avec le glaçon
+        if keys[pygame.K_e] and not self.holding_ice:
+            if self.player.rect.colliderect(self.ice.rect):
+                self.holding_ice = True
+                self.ice.held = True
+
+        if keys[pygame.K_f] and self.holding_ice:
+            self.holding_ice = False
+            self.ice.held = False
+            self.ice.rect.topleft = self.player.rect.topleft
+
     def update(self):
 
         # Déplacement du joueur
         self.player.move()
         self.player.update()
 
-        #Verification de collision
+        if self.holding_ice:
+            self.ice.rect.center = self.player.rect.center
+
         for sprite in self.group.sprites():
             if sprite.feet.collidelist(self.walls) > -1:
                 sprite.move_back()
