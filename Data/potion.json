@@ -1,0 +1,10 @@
+{
+    "potions": [
+        { "id": "P001", "name": "Vapeur", "ingredients": ["Feu", "Eau"], "effect": "Aveuglement temporaire", "category": "Statut" },
+        { "id": "P002", "name": "Fumée", "ingredients": ["Feu", "Air"], "effect": "Dégâts légers", "category": "Attaque" },
+        { "id": "P003", "name": "Lave", "ingredients": ["Feu", "Terre"], "effect": "Brûlure", "category": "Attaque" },
+        { "id": "P004", "name": "Brouillard", "ingredients": ["Eau", "Air"], "effect": "Esquive augmentée", "category": "Défense" },
+        { "id": "P005", "name": "Boue", "ingredients": ["Eau", "Terre"], "effect": "Ralenti", "category": "Statut" },
+        { "id": "P006", "name": "Poussière", "ingredients": ["Terre", "Air"], "effect": "Cécité", "category": "Statut" }
+    ]
+}

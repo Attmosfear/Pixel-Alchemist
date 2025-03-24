@@ -1,11 +1,6 @@
 import pygame
 import pyscroll
 
-
-import pygame
-import pyscroll
-from pygame.examples.cursors import image
-
 from player import Player
 import pytmx
 
