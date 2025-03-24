@@ -3,7 +3,7 @@ import pygame
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.sprite_sheet = pygame.image.load('../Assets/Art/playerTest.png').convert()
+        self.sprite_sheet = pygame.image.load('Assets/Art/playerTest.png').convert()
         self.image = self.get_image(0,0)
         self.rect = self.image.get_rect()
         self.position = [x, y]
@@ -44,11 +44,11 @@ class Player(pygame.sprite.Sprite):
 
 
     def drop_item(self):
-        #Le joueur dépose son objet sur la table de craft
+        #Le joueur dépose son objet
+
         if self.held_item:
             print(f"Objet {self.held_item} posé")
             item = self.held_item
             self.held_item = None  # Vide les mains du joueur
             return item
         return None  # Aucun objet à poser
-

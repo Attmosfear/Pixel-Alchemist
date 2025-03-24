@@ -1,14 +1,14 @@
 {
     "blocks": [
-        { "id": 1, "name": "Feu", "texture": "fire.png", "tier": 1, "ingredients": null },
-        { "id": 2, "name": "Eau", "texture": "water.png", "tier": 1, "ingredients": null },
-        { "id": 3, "name": "Terre", "texture": "earth.png", "tier": 1, "ingredients": null },
-        { "id": 4, "name": "Air", "texture": "air.png", "tier": 1, "ingredients": null },
-        { "id": 5, "name": "Vapeur", "texture": "vapeur.png", "tier": 2, "ingredients": ["Feu", "Eau"] },
-        { "id": 6, "name": "Fumée", "texture": "fumee.png", "tier": 2, "ingredients": ["Feu", "Air"] },
-        { "id": 7, "name": "Lave", "texture": "lave.png", "tier": 2, "ingredients": ["Feu", "Terre"] },
-        { "id": 8, "name": "Boue", "texture": "boue.png", "tier": 2, "ingredients": ["Eau", "Terre"] },
-        { "id": 9, "name": "Brouillard", "texture": "brouillard.png", "tier": 2, "ingredients": ["Eau", "Air"] },
-        { "id": 10, "name": "Poussière", "texture": "poussière.png", "tier": 2, "ingredients": ["Terre", "Air"] },
-    ],
+        { "id":1, "name": "Feu", "texture": "fire.png", "tier": 1, "ingredients": null },
+        { "id":2, "name": "Eau", "texture": "water.png", "tier": 1, "ingredients": null },
+        { "id":3, "name": "Terre", "texture": "earth.png", "tier": 1, "ingredients": null },
+        { "id":4, "name": "Air", "texture": "air.png", "tier": 1, "ingredients": null },
+        { "id":5, "name": "Vapeur", "texture": "vapeur.png", "tier": 2, "ingredients": ["Feu", "Eau"] },
+        { "id":6, "name": "Fumée", "texture": "fumee.png", "tier": 2, "ingredients": ["Feu", "Air"] },
+        { "id":7, "name": "Lave", "texture": "lave.png", "tier": 2, "ingredients": ["Feu", "Terre"] },
+        { "id":8, "name": "Boue", "texture": "boue.png", "tier": 2, "ingredients": ["Eau", "Terre"] },
+        { "id":9, "name": "Brouillard", "texture": "brouillard.png", "tier": 2, "ingredients": ["Eau", "Air"]},
+        { "id":10, "name": "Poussière", "texture": "poussière.png", "tier": 2, "ingredients": ["Terre", "Air"]}
+    ]
 }

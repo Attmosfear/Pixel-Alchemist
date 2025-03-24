@@ -1,7 +1,9 @@
+from Phase1.data_loader import *
+from Phase1.elements import Element
+from Phase1.player import Player
+
 import pygame
 import pyscroll
-
-from player import Player
 import pytmx
 
 class Game:
@@ -13,7 +15,7 @@ class Game:
 
 
         # Chargement de la carte
-        tmx_data = pytmx.util_pygame.load_pygame("../Assets/Map/Maptest.tmx")
+        tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Maptest.tmx")
         map_date = pyscroll.data.TiledMapData(tmx_data)
         map_layer = pyscroll.orthographic.BufferedRenderer(map_date, (NATIVE_WIDTH, NATIVE_HEIGHT))
 
@@ -33,6 +35,18 @@ class Game:
         self.walls.append(pygame.Rect(screen_width, 0, 5, screen_height))
         self.walls.append(pygame.Rect(0, -5, screen_width, 5))
         self.walls.append(pygame.Rect(0, screen_height, screen_width, 5))
+
+        """Gestion des blocks"""
+        # Charger les données des éléments depuis le JSON
+        self.elements_data = load_elements("Data/blocks.json")
+
+        # Liste des éléments affichés sur la carte
+        self.elements = pygame.sprite.Group()
+
+        # Ajouter des éléments sur la carte (test emplacement aleatoire)
+        positions = [(100, 100)]  # Test position
+        for pos, data in zip(positions, self.elements_data[0]):  # Place les 3 premiers éléments
+            self.elements.add(Element(pos[0], pos[1], data))
 
         #Dessiner le groupe de calques
         self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
