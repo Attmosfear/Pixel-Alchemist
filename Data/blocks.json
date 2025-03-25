@@ -1,7 +1,7 @@
 {
     "blocks": [
         { "id":1, "name": "Feu", "texture": "fire.png", "tier": 1, "ingredients": null },
-        { "id":2, "name": "Eau", "texture": "water.png", "tier": 1, "ingredients": null },
+        { "id":2, "name": "Eau", "texture": "ice.png", "tier": 1, "ingredients": null },
         { "id":3, "name": "Terre", "texture": "earth.png", "tier": 1, "ingredients": null },
         { "id":4, "name": "Air", "texture": "air.png", "tier": 1, "ingredients": null },
         { "id":5, "name": "Vapeur", "texture": "vapeur.png", "tier": 2, "ingredients": ["Feu", "Eau"] },

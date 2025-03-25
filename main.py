@@ -44,13 +44,19 @@ class Game:
         self.elements = pygame.sprite.Group()
 
         # Ajouter des éléments sur la carte (test emplacement aleatoire)
-        positions = [(100, 100)]  # Test position
-        for pos, data in zip(positions, self.elements_data[0]):  # Place les 3 premiers éléments
+        positions = [(100, 100),(250,250)]  # Test position
+
+        for pos, data in zip(positions, self.elements_data[:2]):
+
             self.elements.add(Element(pos[0], pos[1], data))
+
+        self.blocks_groupe = pygame.sprite.Group()
+        self.blocks_groupe.add(self.elements)
 
         #Dessiner le groupe de calques
         self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
         self.group.add(self.player)
+
 
     def handling_events(self):
         for event in pygame.event.get():
@@ -87,6 +93,7 @@ class Game:
         self.group.update()
         self.group.center(self.player.rect.center)
         self.group.draw(self.native_surface)
+        self.blocks_groupe.draw(self.native_surface)
 
         # Redimensionner la surface et l'afficher sur l'écran
         scaled_surface = pygame.transform.scale(self.native_surface, (WINDOW_WIDTH, WINDOW_HEIGHT))

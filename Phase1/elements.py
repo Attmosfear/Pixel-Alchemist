@@ -1,5 +1,5 @@
 import pygame
-
+import os
 class Element(pygame.sprite.Sprite):
     def __init__(self, x, y, element_data):
         """
@@ -22,8 +22,10 @@ class Element(pygame.sprite.Sprite):
         self.ingredients = element_data["ingredients"]  # Peut être None
 
         # Chargement de l'image
-        self.image = pygame.image.load(f"../Assets/Art/Items/Blocks/{self.texture}").convert_alpha()
+        BASE_DIR = os.path.dirname(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+        chemin_image = os.path.join(BASE_DIR, "Pixel-Alchemist", "Assets", "Art", "Items", "Blocks", self.texture)
+        self.image = pygame.image.load(chemin_image).convert_alpha()
         self.rect = self.image.get_rect(topleft=(x, y))
-
+        print("Image chargée :", self.image.get_size())  # Vérifie la taille de l'image
     def update(self):
         pass  # Peut être utilisé plus tard pour des animations
