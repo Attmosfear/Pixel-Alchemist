@@ -44,7 +44,7 @@ class Game:
         self.elements = pygame.sprite.Group()
 
         # Ajouter des éléments sur la carte (test emplacement aleatoire)
-        positions = [(100, 100),(250,250)]  # Test position
+        positions = [(100,100), (200,200)]  # Test position
 
         for pos, data in zip(positions, self.elements_data[:2]):
 
@@ -65,15 +65,19 @@ class Game:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.player.velocity[0] = -1
+            self.player.direction = 'left'
         elif keys[pygame.K_RIGHT]:
             self.player.velocity[0] = 1
+            self.player.direction = 'right'
         else:
             self.player.velocity[0] = 0
 
         if keys[pygame.K_UP]:
             self.player.velocity[1] = -1
+            self.player.direction = 'up'
         elif keys[pygame.K_DOWN]:
             self.player.velocity[1] = 1
+            self.player.direction = 'down'
         else:
             self.player.velocity[1] = 0
 
