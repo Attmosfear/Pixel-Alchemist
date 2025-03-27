@@ -1,7 +1,7 @@
 from Phase1.data_loader import *
 from Phase1.elements import Element
 from Phase1.player import Player
-
+from Phase1.placement_manager import *
 import pygame
 import pyscroll
 import pytmx
@@ -25,9 +25,21 @@ class Game:
         """Gestion des collisions"""
         # Recuperation des rectangles de collision dans une liste
         self.walls = []
+        self.craft_zones = []
+        self.drop_zones = []
+        self.potioncraft_zone = []
         for obj in tmx_data.objects:
             if obj.type == "collision":
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+            if obj.type == "craft_zone":
+                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                self.crafts_zones.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+            if obj.type == "drop_zone":
+                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                self.drop_zones.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+            if obj.type == "potioncraft_zone":
+                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                self.potioncraft_zone.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
 
         # Ajout des bords de l'écran comme des collisions
         screen_width, screen_height = NATIVE_WIDTH, NATIVE_HEIGHT
@@ -63,6 +75,7 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
         keys = pygame.key.get_pressed()
+        """Mouvement"""
         if keys[pygame.K_LEFT]:
             self.player.velocity[0] = -1
             self.player.direction = 'left'
@@ -80,6 +93,11 @@ class Game:
             self.player.direction = 'down'
         else:
             self.player.velocity[1] = 0
+        """Action"""
+        if event.key == pygame.K_e and player.holding_item:
+            tile_x, tile_y = self.player.get_front_tile()
+            if can_place_object(tile_x, tile_y, self.craft_zones):  # Vérifie si c'est une zone valide
+                self.player.place_item(tile_x, tile_y)
 
     def update(self):
 

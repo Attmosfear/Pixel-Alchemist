@@ -53,3 +53,25 @@ class Player(pygame.sprite.Sprite):
             self.held_item = None  # Vide les mains du joueur
             return item
         return None  # Aucun objet à poser
+
+    def get_front_tile(self):
+        """Retourne la position de la case devant le joueur."""
+        tile_size = 32  # Taille d'une case (à ajuster selon ta carte)
+
+        direction_vectors = {
+            "up": (0, -tile_size),
+            "down": (0, tile_size),
+            "left": (-tile_size, 0),
+            "right": (tile_size, 0),
+        }
+
+        dx, dy = direction_vectors.get(self.direction, (0, 0))  # Récupère le déplacement
+        front_x = self.rect.x + dx
+        front_y = self.rect.y + dy
+
+        return front_x // tile_size, front_y // tile_size  # Convertit en coordonnées de grille
+
+    def place_item(self, tile_x, tile_y, all_blocks):
+        """Pose l'objet que le joueur tient sur la case spécifiée."""
+        if self.held_item:
+            all_blocks.append(self.held_item)
