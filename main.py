@@ -6,6 +6,7 @@ import pygame
 import pyscroll
 import pytmx
 
+
 class Game:
     def __init__(self, screen):
         self.screen = screen
@@ -33,13 +34,15 @@ class Game:
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
             if obj.type == "craft_zone":
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-                self.crafts_zones.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                self.craft_zones.append(Zone(obj.x, obj.y, obj.id, obj.type))
             if obj.type == "drop_zone":
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-                self.drop_zones.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                self.drop_zones.append(Zone(obj.x, obj.y, obj.id, obj.type))
             if obj.type == "potioncraft_zone":
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-                self.potioncraft_zone.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                self.potioncraft_zone.append(Zone(obj.x, obj.y, obj.id, obj.type))
+
+        self.zones = self.craft_zones + self.drop_zones + self.potioncraft_zone
 
         # Ajout des bords de l'écran comme des collisions
         screen_width, screen_height = NATIVE_WIDTH, NATIVE_HEIGHT
@@ -56,48 +59,53 @@ class Game:
         self.elements = pygame.sprite.Group()
 
         # Ajouter des éléments sur la carte (test emplacement aleatoire)
-        positions = [(100,100), (200,200)]  # Test position
+        positions = [(10,10), (10,50)]  # Test position
 
         for pos, data in zip(positions, self.elements_data[:2]):
+            element = Element(pos[0], pos[1], data)
+            self.elements.add(element)
 
-            self.elements.add(Element(pos[0], pos[1], data))
-
-        self.blocks_groupe = pygame.sprite.Group()
-        self.blocks_groupe.add(self.elements)
 
         #Dessiner le groupe de calques
         self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
         self.group.add(self.player)
 
 
+
     def handling_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            """Action"""
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_e:
+                    if get_front_tile(self.player, self.zones) is not None:
+                        zone = get_front_tile(self.player, self.zones)
+                        if self.player.held_item is not None:
+                            self.player.pick_element(get_element_on_tile(zone, self.elements)) # recuperer l'objet qui est dans la case
+                            print("E pressed")
+                        if self.player.held_item is None:
+                            self.player.drop_element(self.player.held_item) # Depose l'objet que le joueur a dans la main
+
         keys = pygame.key.get_pressed()
         """Mouvement"""
         if keys[pygame.K_LEFT]:
             self.player.velocity[0] = -1
-            self.player.direction = 'left'
+            self.player.direction = 'LEFT'
         elif keys[pygame.K_RIGHT]:
             self.player.velocity[0] = 1
-            self.player.direction = 'right'
+            self.player.direction = 'RIGHT'
         else:
             self.player.velocity[0] = 0
 
         if keys[pygame.K_UP]:
             self.player.velocity[1] = -1
-            self.player.direction = 'up'
+            self.player.direction = 'UP'
         elif keys[pygame.K_DOWN]:
             self.player.velocity[1] = 1
-            self.player.direction = 'down'
+            self.player.direction = 'DOWN'
         else:
             self.player.velocity[1] = 0
-        """Action"""
-        if event.key == pygame.K_e and player.holding_item:
-            tile_x, tile_y = self.player.get_front_tile()
-            if can_place_object(tile_x, tile_y, self.craft_zones):  # Vérifie si c'est une zone valide
-                self.player.place_item(tile_x, tile_y)
 
     def update(self):
 
@@ -110,12 +118,15 @@ class Game:
             if sprite.feet.collidelist(self.walls) > -1:
                 sprite.move_back()
 
+        #Gestion des blocs en mouvement
+        get_front_tile(self.player, self.zones) # Recuperation de la case devant le joueur
+
     def display(self):
         self.native_surface.fill((100, 100, 100))
         self.group.update()
         self.group.center(self.player.rect.center)
         self.group.draw(self.native_surface)
-        self.blocks_groupe.draw(self.native_surface)
+        self.elements.draw(self.native_surface)
 
         # Redimensionner la surface et l'afficher sur l'écran
         scaled_surface = pygame.transform.scale(self.native_surface, (WINDOW_WIDTH, WINDOW_HEIGHT))

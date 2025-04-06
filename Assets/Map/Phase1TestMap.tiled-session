@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "SecondMaptest.tmx",
+    "activeFile": "Maptest.tmx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "Tous les Fichiers (*)",
@@ -12,22 +12,22 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 2,
-            "selectedLayer": 1,
+            "scale": 3,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 141.25,
-                "y": 119.25
+                "x": 137.83333333333331,
+                "y": 138.49999999999997
             }
         },
         "SecondMaptest.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 2,
+            "scale": 3,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 141.75,
-                "y": 100.75
+                "x": 148.83333333333331,
+                "y": 144.16666666666669
             }
         },
         "TileSetTest.tsx": {
@@ -44,8 +44,7 @@
     "map.width": 10,
     "openFiles": [
         "TileSetTest.tsx",
-        "Maptest.tmx",
-        "SecondMaptest.tmx"
+        "Maptest.tmx"
     ],
     "project": "Phase1TestMap.tiled-project",
     "recentFiles": [

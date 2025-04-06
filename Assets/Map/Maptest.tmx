@@ -19,9 +19,9 @@
   <object id="13" x="96" y="0.333333" width="32" height="31.3333"/>
  </objectgroup>
  <objectgroup id="3" name="Zones">
-  <object id="18" type="drop_zone" x="-0.25" y="0.125" width="32.5" height="31.5"/>
-  <object id="21" type="drop_zone" x="31.875" y="0.125" width="32.5" height="31.5"/>
-  <object id="22" type="drop_zone" x="64.375" y="0.25" width="32.5" height="31.5"/>
+  <object id="18" type="drop_zone" x="0" y="0" width="32" height="32"/>
+  <object id="21" type="drop_zone" x="32" y="0" width="32" height="32"/>
+  <object id="22" type="drop_zone" x="64" y="0" width="32" height="32"/>
   <object id="23" type="drop_zone" x="-0.375" y="32.25" width="32.5" height="31.5"/>
   <object id="24" type="drop_zone" x="-0.25" y="160.25" width="32.5" height="31.5"/>
   <object id="25" type="drop_zone" x="-0.25" y="192.25" width="32.5" height="31.5"/>
