@@ -47,11 +47,14 @@ class Player(pygame.sprite.Sprite):
         element.held_by_player = True
 
     def drop_element(self, zone):
-        print("Objet deposer")
-        self.held_item.held_by_player = False
-        self.held_item.rect.center = zone.rect.center
-        self.held_item = None
-        zone.have_object = True
+        if self.held_item:
+            print("objet deposé : ", self.held_item)
+            self.held_item.held_by_player = False
+            self.held_item.rect.center = zone.rect.center
+            self.held_item = None
+            zone.have_object = True
+        else:
+            print("Aucun objet a deposer")
 
     def update(self):
         self.rect.topleft = self.position

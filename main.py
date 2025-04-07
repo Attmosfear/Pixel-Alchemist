@@ -79,11 +79,14 @@ class Game:
             """Action"""
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
-                    zone = get_front_tile(self.player, self.zones)
-                    if zone:
-                        element = get_element_on_tile(zone, self.elements)
-                        if element:
-                            self.player.pick_element(element)
+                    front_zone = get_front_tile(self.player, self.zones)
+                    if front_zone:
+                        if self.player.held_item:
+                            self.player.drop_element(front_zone)
+                        else:
+                            element = get_element_on_tile(front_zone, self.elements)
+                            if element:
+                                self.player.pick_element(element)
 
 
         keys = pygame.key.get_pressed()
