@@ -41,5 +41,7 @@ def get_element_on_tile(zone, elements):
     :return:
     """
     for element in elements:
+        if element.held_by_player:
+            continue
         if zone.rect.colliderect(element.rect):
             return element

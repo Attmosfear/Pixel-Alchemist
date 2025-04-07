@@ -79,13 +79,12 @@ class Game:
             """Action"""
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
-                    if get_front_tile(self.player, self.zones) is not None:
-                        zone = get_front_tile(self.player, self.zones)
-                        if self.player.held_item is not None:
-                            self.player.pick_element(get_element_on_tile(zone, self.elements)) # recuperer l'objet qui est dans la case
-                            print("E pressed")
-                        if self.player.held_item is None:
-                            self.player.drop_element(self.player.held_item) # Depose l'objet que le joueur a dans la main
+                    zone = get_front_tile(self.player, self.zones)
+                    if zone:
+                        element = get_element_on_tile(zone, self.elements)
+                        if element:
+                            self.player.pick_element(element)
+
 
         keys = pygame.key.get_pressed()
         """Mouvement"""
@@ -119,7 +118,9 @@ class Game:
                 sprite.move_back()
 
         #Gestion des blocs en mouvement
-        get_front_tile(self.player, self.zones) # Recuperation de la case devant le joueur
+        for element in self.elements:
+            element.update_position(self.player)
+
 
     def display(self):
         self.native_surface.fill((100, 100, 100))

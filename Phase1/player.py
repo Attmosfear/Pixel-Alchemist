@@ -39,6 +39,9 @@ class Player(pygame.sprite.Sprite):
 
 
     def pick_element(self, element):
+        if self.held_item is not None:
+            print("Tu tiend l'objet suivant : ", self.held_item)
+            return
         print("Objet recuperer")
         self.held_item = element
         element.held_by_player = True
@@ -46,6 +49,7 @@ class Player(pygame.sprite.Sprite):
     def drop_element(self, zone):
         print("Objet deposer")
         self.held_item.held_by_player = False
+        self.held_item.rect.center = zone.rect.center
         self.held_item = None
         zone.have_object = True
 
