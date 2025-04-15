@@ -2,6 +2,7 @@ from Phase1.data_loader import *
 from Phase1.elements import Element
 from Phase1.player import Player
 from Phase1.placement_manager import *
+from Phase1.craft_manager import check_craft
 import pygame
 import pyscroll
 import pytmx
@@ -13,6 +14,7 @@ class Game:
         self.running = True
         self.clock = pygame.time.Clock()
         self.native_surface = pygame.Surface((NATIVE_WIDTH, NATIVE_HEIGHT))
+        self.recipe = None
 
 
         # Chargement de la carte
@@ -54,6 +56,7 @@ class Game:
         """Gestion des blocks"""
         # Charger les données des éléments depuis le JSON
         self.elements_data = load_elements("Data/blocks.json")
+        self.recipes_data = load_recipes("Data/recipes.json")
 
         # Liste des éléments affichés sur la carte
         self.elements = pygame.sprite.Group()
@@ -124,6 +127,22 @@ class Game:
         for element in self.elements:
             element.update_position(self.player)
 
+        #Gestion des crafts
+        elements_craft = pygame.sprite.Group()
+        for zone in self.craft_zones:
+            elements_craft.add(get_element_on_tile(zone, self.elements))
+
+        recipe = check_craft(elements_craft,self.recipes_data)
+        if self.recipe:
+            print(f"Craft reussi : {recipe['result_name']}")
+            for el in elements_craft:
+                self.elements.remove(el)
+
+            result_data = next(e for e in self.elements_data if e["id"] == recipe['result'])
+
+            position = self.craft_zones[0].rect.topleft
+            new_element = Element(position[0], position[1], result_data)
+            self.elements.add(new_element)
 
     def display(self):
         self.native_surface.fill((100, 100, 100))

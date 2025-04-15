@@ -12,3 +12,9 @@ def load_elements(filename):
         raise TypeError(f"Erreur : 'blocks' doit être une liste, reçu {type(elements)} : {elements}")
 
     return elements
+
+def load_recipes(path):
+    """Charge les recettes depuis un fichier JSON séparé."""
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data["recipes"]

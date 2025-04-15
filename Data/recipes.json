@@ -1,0 +1,76 @@
+{
+    "recipes": [
+        {
+            "result": 5,
+            "result_name": "Vapeur",
+            "ingredients": [
+                1,
+                2
+            ],
+            "ingredient_names": [
+                "Feu",
+                "Eau"
+            ]
+        },
+        {
+            "result": 6,
+            "result_name": "Fumée",
+            "ingredients": [
+                1,
+                4
+            ],
+            "ingredient_names": [
+                "Feu",
+                "Air"
+            ]
+        },
+        {
+            "result": 7,
+            "result_name": "Lave",
+            "ingredients": [
+                1,
+                3
+            ],
+            "ingredient_names": [
+                "Feu",
+                "Terre"
+            ]
+        },
+        {
+            "result": 8,
+            "result_name": "Boue",
+            "ingredients": [
+                2,
+                3
+            ],
+            "ingredient_names": [
+                "Eau",
+                "Terre"
+            ]
+        },
+        {
+            "result": 9,
+            "result_name": "Brouillard",
+            "ingredients": [
+                2,
+                4
+            ],
+            "ingredient_names": [
+                "Eau",
+                "Air"
+            ]
+        },
+        {
+            "result": 10,
+            "result_name": "Poussière",
+            "ingredients": [
+                3,
+                4
+            ],
+            "ingredient_names": [
+                "Terre",
+                "Air"
+            ]
+        }
+    ]
+}

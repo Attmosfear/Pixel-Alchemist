@@ -35,16 +35,16 @@ class Element(pygame.sprite.Sprite):
         if self.held_by_player:
             offset_x, offset_y = 0, 0
             if player.direction == "UP":
-                offset_y = -32
+                offset_y = -15
             elif player.direction == "DOWN":
-                offset_y = 32
+                offset_y = 15
             elif player.direction == "LEFT":
-                offset_x = -32
+                offset_x = -20
             elif player.direction == "RIGHT":
-                offset_x = 32
+                offset_x = 20
 
-            self.rect.x = player.rect.x + offset_x
-            self.rect.y = player.rect.y + offset_y
+            self.rect.centerx = player.rect.centerx + offset_x
+            self.rect.centery = player.rect.centery + offset_y
 
 
     def update(self):
