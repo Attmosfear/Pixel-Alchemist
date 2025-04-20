@@ -129,19 +129,24 @@ class Game:
 
         #Gestion des crafts
         elements_craft = pygame.sprite.Group()
+        crafting_element = pygame.sprite
         for zone in self.craft_zones:
-            elements_craft.add(get_element_on_tile(zone, self.elements))
+            crafting_element = get_element_on_tile(zone, self.elements)
+            if crafting_element:
+                elements_craft.add(crafting_element)
 
+        print(crafting_element)
         recipe = check_craft(elements_craft,self.recipes_data)
-        if self.recipe:
+
+        if recipe:
             print(f"Craft reussi : {recipe['result_name']}")
             for el in elements_craft:
                 self.elements.remove(el)
 
             result_data = next(e for e in self.elements_data if e["id"] == recipe['result'])
 
-            position = self.craft_zones[0].rect.topleft
-            new_element = Element(position[0], position[1], result_data)
+            position_crafted_element = self.craft_zones[0].rect
+            new_element = Element(position_crafted_element[0] + 8 , position_crafted_element[1] + 8, result_data)
             self.elements.add(new_element)
 
     def display(self):

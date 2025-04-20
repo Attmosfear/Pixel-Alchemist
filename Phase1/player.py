@@ -22,15 +22,29 @@ class Player(pygame.sprite.Sprite):
     def save_location(self): self.old_position = self.position.copy()
 
     def get_image(self, x, y):
+        """
+        Recupere l'image du joueur dans la spritsheet assicié au joueur
+        :param x: Position horizontal de l'image du joueur
+        :param y: Position vertical de l'image du joueur
+        :return: l'image du joueur
+        """
         image = pygame.Surface([25, 30])
         image.blit(self.sprite_sheet, (0, 0), (x, y, 16, 16))
         return image
 
     def move(self):
+        """
+        Modifie la position du joueur sur la carte
+        :return: Aucun car modification dynamique
+        """
         self.position[0] += self.velocity[0] * self.speed
         self.position[1] += self.velocity[1] * self.speed
 
     def move_back(self):
+        """
+        Sauvegarde la position du joueur pour qu'en cas de collision celui ci s'arrete
+        :return: Modification dynamique
+        """
         self.position = self.old_position
         self.rect.topleft = self.position
         self.feet.midbottom = self.rect.midbottom
@@ -39,6 +53,11 @@ class Player(pygame.sprite.Sprite):
 
 
     def pick_element(self, element):
+        """
+        Permet de joueur de recuperer un element par consequent permettre a l'objet de bouger avec le joueur
+        :param element: l'element a recuperer
+        :return: Modification dynamique
+        """
         if self.held_item is not None:
             print("Tu tiend l'objet suivant : ", self.held_item)
             return
@@ -47,6 +66,11 @@ class Player(pygame.sprite.Sprite):
         element.held_by_player = True
 
     def drop_element(self, zone):
+        """
+        Permet de joueur de poser un element par consequent d'arreter le mouvement de l'objet
+        :param zone: zone sur laquelle l'objet est posé
+        :return: Modification dynamique
+        """
         if self.held_item:
             print("objet deposé : ", self.held_item)
             self.held_item.held_by_player = False

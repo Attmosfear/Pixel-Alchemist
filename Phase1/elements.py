@@ -22,8 +22,7 @@ class Element(pygame.sprite.Sprite):
         self.ingredients = element_data["ingredients"] # Peut être None
 
         # Chargement de l'image
-        BASE_DIR = os.path.dirname(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-        chemin_image = os.path.join(BASE_DIR, "Pixel-Alchemist", "Assets", "Art", "Items", "Blocks", self.texture)
+        chemin_image = os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(os.path.dirname(__file__)))), "Pixel-Alchemist", "Assets", "Art", "Items", "Blocks", self.texture)
         self.image = pygame.image.load(chemin_image).convert_alpha()
         self.rect = self.image.get_rect(topleft=(x, y))
         print("Image chargée :", self.image.get_size())  # Vérifie la taille de l'image
@@ -31,7 +30,7 @@ class Element(pygame.sprite.Sprite):
         self.held_by_player = False
 
     def update_position(self, player):
-        """ Met à jour la position du bloc quand il est porté par le joueur """
+        """Met à jour la position du bloc quand il est porté par le joueur"""
         if self.held_by_player:
             offset_x, offset_y = 0, 0
             if player.direction == "UP":

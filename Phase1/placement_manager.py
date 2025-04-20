@@ -12,8 +12,8 @@ class Zone(pygame.sprite.Sprite):
 
 def get_front_tile(player, zones):
     """
-    Verifie la presence du tile devant le joueur
-    # :return: None s'il y en a pas ou la tile si elle est presente
+    Verifie la presence d'une tuile devant le joueur
+    # :return: None s'il y en a pas ou la tuile si elle est presente
     """
     player_position = player.rect.center
     front_tile_position = (player_position[0], player_position[1] - 25)
@@ -35,10 +35,10 @@ def get_front_tile(player, zones):
 
 def get_element_on_tile(zone, elements):
     """
-
-    :param zone:
-    :param elements:
-    :return:
+    Permet de savoir quelle objet sur la zone demandé
+    :param zone: zone parmis les zones recuperer dans le fichier de la carte
+    :param elements: la liste de tous les elements presents sur la carte
+    :return: l'element present sur la zone
     """
     for element in elements:
         if element.held_by_player:
