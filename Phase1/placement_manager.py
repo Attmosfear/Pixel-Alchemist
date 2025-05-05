@@ -1,5 +1,3 @@
-from zoneinfo import ZoneInfo
-
 import pygame
 
 class Zone(pygame.sprite.Sprite):

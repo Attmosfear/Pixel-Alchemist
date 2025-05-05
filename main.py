@@ -2,10 +2,12 @@ from Phase1.data_loader import *
 from Phase1.elements import Element
 from Phase1.player import Player
 from Phase1.placement_manager import *
-from Phase1.craft_manager import check_craft
+from Phase1.craft_manager import check_block_craft
 import pygame
 import pyscroll
 import pytmx
+import time
+
 
 
 class Game:
@@ -55,8 +57,9 @@ class Game:
 
         """Gestion des blocks"""
         # Charger les données des éléments depuis le JSON
-        self.elements_data = load_elements("Data/blocks.json")
+        self.elements_data = load_elements("Data/elements.json")
         self.recipes_data = load_recipes("Data/recipes.json")
+        #self.potions_data = load_potion("Data/potions.json")
 
         # Liste des éléments affichés sur la carte
         self.elements = pygame.sprite.Group()
@@ -135,8 +138,7 @@ class Game:
             if crafting_element:
                 elements_craft.add(crafting_element)
 
-        print(crafting_element)
-        recipe = check_craft(elements_craft,self.recipes_data)
+        recipe = check_block_craft(elements_craft, self.recipes_data)
 
         if recipe:
             print(f"Craft reussi : {recipe['result_name']}")

@@ -1,8 +1,8 @@
 import json
 
-def load_elements(filename):
+def load_elements(path):
     """Charge les éléments depuis un fichier JSON."""
-    with open(filename, "r", encoding="utf-8") as file:
+    with open(path, "r", encoding="utf-8") as file:
         data = json.load(file)
 
     print("Données brutes chargées :", data)  # Vérification
@@ -18,3 +18,13 @@ def load_recipes(path):
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data["recipes"]
+
+def load_potion(path):
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    potions = data["potions"]
+    if not isinstance(potions, list):
+        raise TypeError(f"Erreur : 'blocks' doit être une liste, reçu {type(potions)} : {potions}")
+    return potions
+

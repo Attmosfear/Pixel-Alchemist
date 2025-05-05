@@ -6,7 +6,7 @@ class Element(pygame.sprite.Sprite):
         Initialise un élément à partir des données JSON.
         :param x: Position X
         :param y: Position Y
-        :param element_data: Dictionnaire contenant les infos de l'élément
+        :param element_data: Dictionnaire contenant les infos les elements
         """
         super().__init__()
 
@@ -22,7 +22,7 @@ class Element(pygame.sprite.Sprite):
         self.ingredients = element_data["ingredients"] # Peut être None
 
         # Chargement de l'image
-        chemin_image = os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(os.path.dirname(__file__)))), "Pixel-Alchemist", "Assets", "Art", "Items", "Blocks", self.texture)
+        chemin_image = os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(os.path.dirname(__file__)))), "Pixel-Alchemist", "Assets", "Art", "Items", "Elements", self.texture)
         self.image = pygame.image.load(chemin_image).convert_alpha()
         self.rect = self.image.get_rect(topleft=(x, y))
         print("Image chargée :", self.image.get_size())  # Vérifie la taille de l'image
