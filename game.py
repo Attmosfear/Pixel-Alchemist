@@ -117,61 +117,77 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
 
-            """Action"""
-            if event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
+                """Action"""
                 if event.key == pygame.K_e:
                     front_zone = get_front_tile(self.player, self.zones)
                     if front_zone:
+                        # Si on est devant la zone de résultat et qu'on a un élément placé
                         if front_zone.type == "potioncraft_zone" and front_zone.id == 37:
                             if self.potion_craft_state["element"] is not None and not self.crafting_in_progress:
                                 # Commencer le crafting
                                 self.crafting_in_progress = True
                                 self.crafting_timer = 0
 
-                                # Trouver la zone de résultat pour l'animation
+                                # Démarrer l'animation
                                 mixing_anim = PotionMixingAnimation(duration=self.crafting_time_required)
                                 self.animation_manager.add_animation(
                                     "potion_mixing",
                                     mixing_anim,
                                     front_zone.rect.center
                                 )
+                                self.ui.show_message("Mélange en cours... Maintenez E", 2.0)
+                                # Important : sortir du bloc après avoir commencé le crafting
+                                # pour éviter d'exécuter le code de dépôt/récupération
                                 continue
 
+                        # Si on tient un objet, essayer de le déposer
                         if self.player.held_item:
                             # Essayons de déposer l'objet
                             if front_zone.type == "potioncraft_zone":
+                                # Vérifier si la zone est déjà occupée
+                                if front_zone.have_object:
+                                    self.ui.show_message("Cette zone contient déjà un objet !", 1.0)
+                                    continue
+
                                 # Placer dans la zone de craft de potions
                                 success = self.place_in_potion_craft_zone(front_zone)
                                 if success:
                                     self.ui.show_message(f"Objet placé dans la zone de crafting de potions !")
                             else:
+                                # Vérifier si la zone est déjà occupée
+                                if front_zone.have_object:
+                                    self.ui.show_message("Cette zone contient déjà un objet !", 1.0)
+                                    continue
+
                                 # Placer normalement
                                 success = self.player.drop_element(front_zone)
                                 if success:
                                     self.ui.show_message(f"Objet déposé")
                         else:
-                            # Essayons de ramasser un objet
-                            # Vérifier s'il y a une potion ou une pierre à cet endroit
-                            potion = self.get_item_on_zone(front_zone, self.potions)
-                            if potion:
-                                success = self.player.pick_element(potion)
-                                if success:
-                                    self.ui.show_message(f"Potion {potion.name} récupérée !")
-                                continue
+                            # On ne tient pas d'objet, essayer d'en ramasser un
+                            game_objects = {
+                                'elements': self.elements,
+                                'potions': self.potions,
+                                'stones': self.enhancement_stones
+                            }
 
-                            stone = self.get_item_on_zone(front_zone, self.enhancement_stones)
-                            if stone:
-                                success = self.player.pick_element(stone)
+                            # Utiliser la fonction améliorée pour récupérer n'importe quel type d'objet
+                            obj = get_element_on_tile(front_zone, game_objects, self.potion_craft_state)
+                            if obj:
+                                success = self.player.pick_element(obj)
                                 if success:
-                                    self.ui.show_message(f"Pierre d'amélioration récupérée !")
-                                continue
+                                    if isinstance(obj, Element):
+                                        msg = f"Élément {obj.name} récupéré !"
+                                    elif isinstance(obj, Potion):
+                                        msg = f"Potion {obj.name} récupérée !"
+                                    elif isinstance(obj, EnhancementStone):
+                                        msg = f"Pierre d'amélioration récupérée !"
+                                    else:
+                                        msg = "Objet récupéré !"
 
-                            # Sinon, chercher un élément normal
-                            element = get_element_on_tile(front_zone, self.elements)
-                            if element:
-                                success = self.player.pick_element(element)
-                                if success:
-                                    self.ui.show_message(f"Élément {element.name} récupéré !")
+                                    self.ui.show_message(msg)
+
                 elif event.key == pygame.K_h:
                     # Touche pour afficher/masquer l'aide
                     self.show_help = not self.show_help
@@ -183,7 +199,7 @@ class Game:
                     else:
                         self.running = False
 
-            if event.type == pygame.KEYUP:
+            elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_e and self.crafting_in_progress:
                     # Si on relâche E, annuler le crafting
                     self.crafting_in_progress = False
@@ -191,11 +207,10 @@ class Game:
                     self.animation_manager.remove_animation("potion_mixing")
                     self.ui.show_message("Mélange interrompu!", 1.0)
 
-            # Vérifier si la touche E est maintenue enfoncée
-        """Crafting de potion"""
+        # Vérifier si la touche E est maintenue enfoncée pour le crafting
         keys = pygame.key.get_pressed()
         if keys[pygame.K_e] and self.crafting_in_progress:
-            # Ici on ne fait rien, le timer sera incrémenté dans update()
+            # Ici on ne fait rien, le timer est incrémenté dans update()
             pass
         else:
             """Mouvement"""
@@ -223,6 +238,11 @@ class Game:
             print("DEBUG: Pas d'objet tenu par le joueur")
             return False
 
+        # Vérifier si la zone est déjà occupée
+        if zone.have_object:
+            print("DEBUG: Cette zone contient déjà un objet")
+            return False
+
         item = self.player.held_item
 
         # Utiliser l'ID de la zone au lieu de son index
@@ -238,6 +258,7 @@ class Game:
                 item.held_by_player = False
                 item.rect.center = zone.rect.center
                 self.player.held_item = None
+                zone.have_object = True  # Marquer la zone comme occupée
                 return True
 
         elif zone_id == 38:  # Pierre 1 (bas gauche)
@@ -246,6 +267,7 @@ class Game:
                 item.held_by_player = False
                 item.rect.center = zone.rect.center
                 self.player.held_item = None
+                zone.have_object = True  # Marquer la zone comme occupée
                 return True
 
         elif zone_id == 39:  # Pierre 2 (bas droite)
@@ -254,6 +276,7 @@ class Game:
                 item.held_by_player = False
                 item.rect.center = zone.rect.center
                 self.player.held_item = None
+                zone.have_object = True  # Marquer la zone comme occupée
                 return True
 
         elif zone_id == 37:  # Résultat (haut droite)
@@ -262,33 +285,6 @@ class Game:
             return False
 
         return False
-
-    def get_item_on_zone(self, zone, item_group):
-        """Récupère un item (potion, pierre, etc.) sur une zone spécifique"""
-        for item in item_group:
-            if item.held_by_player:
-                continue
-            if zone.rect.colliderect(item.rect):
-                # Si c'est une zone de craft de potion, réinitialiser l'état correspondant
-                if zone.type == "potioncraft_zone":
-                    zone_id = zone.id
-                    print(f"DEBUG: Récupération d'un objet sur la zone {zone_id}")
-
-                    if zone_id == 36 and self.potion_craft_state["element"] == item:
-                        self.potion_craft_state["element"] = None
-                        print("DEBUG: Réinitialisation de l'élément")
-                    elif zone_id == 38 and self.potion_craft_state["stone1"] == item:
-                        self.potion_craft_state["stone1"] = None
-                        print("DEBUG: Réinitialisation de la pierre 1")
-                    elif zone_id == 39 and self.potion_craft_state["stone2"] == item:
-                        self.potion_craft_state["stone2"] = None
-                        print("DEBUG: Réinitialisation de la pierre 2")
-                    elif zone_id == 37 and self.potion_craft_state["result"] == item:
-                        self.potion_craft_state["result"] = None
-                        print("DEBUG: Récupération de la potion résultante")
-
-                return item
-        return None
 
     def try_craft_potion(self):
         """Essaye de créer une potion avec les éléments placés"""
@@ -315,13 +311,17 @@ class Game:
         # Trouver la zone de résultat par ID
         result_zone = None
         for zone in self.potioncraft_zones:
-            if zone.id == 37:  # ID de la zone de résultat (bas droite)
+            if zone.id == 37:  # ID de la zone de résultat
                 result_zone = zone
                 break
 
         if not result_zone:
             print("Zone de résultat non trouvée")
             return False
+
+        # Marquer la zone comme libre avant de créer la potion
+        result_zone.have_object = False
+
         new_potion = Potion(result_zone.rect.centerx, result_zone.rect.centery, matching_potion, element_name)
 
         # Appliquer les améliorations des pierres
@@ -342,6 +342,9 @@ class Game:
         # Ajouter la potion aux potions disponibles
         self.potions.add(new_potion)
         self.potion_craft_state["result"] = new_potion
+
+        # Marquer la zone de résultat comme occupée
+        result_zone.have_object = True
 
         # Donner de l'XP au joueur
         self.player.craft_success(new_potion.category)
@@ -383,7 +386,6 @@ class Game:
                 self.animation_manager.remove_animation("potion_mixing")
                 self.ui.show_message("Mélange interrompu! Vous avez relâché la touche E.", 1.0)
                 return
-
 
             # Vérifier si le temps requis est écoulé
             if self.crafting_timer >= self.crafting_time_required:
@@ -431,7 +433,9 @@ class Game:
         # Gestion des crafts d'éléments
         elements_craft = pygame.sprite.Group()
         for zone in self.craft_zones:
-            crafting_element = get_element_on_tile(zone, self.elements)
+            # Utiliser la version non-modifiée de get_element_on_tile pour les crafts d'éléments
+            # car elle est spécifique à ce processus
+            crafting_element = get_element_on_tile(zone, {'elements': self.elements}, None)
             if crafting_element:
                 elements_craft.add(crafting_element)
 
@@ -513,7 +517,7 @@ class Game:
             "Contrôles:",
             "- Flèches directionnelles: Déplacer le personnage",
             "- E: Ramasser/Déposer un objet",
-            "- C: Créer une potion dans la zone de crafting",
+            "- E (maintenu devant la zone de résultat): Créer une potion",
             "- H: Afficher/Masquer ce menu d'aide",
             "- ESC: Quitter le jeu",
             "",
@@ -526,7 +530,8 @@ class Game:
             "Conseils:",
             "- Les potions ont des effets différents selon les éléments utilisés",
             "- Les pierres d'amélioration augmentent la puissance ou la durée des potions",
-            "- Plus vous montez de niveau, plus vous débloquez de recettes"
+            "- Un seul objet peut être posé sur chaque case",
+            "- Pour créer une potion, placez-vous devant la zone de résultat et maintenez E"
         ]
 
         font = pygame.font.SysFont('Arial', 20)
