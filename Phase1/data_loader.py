@@ -19,12 +19,24 @@ def load_recipes(path):
         data = json.load(f)
     return data["recipes"]
 
-def load_potion(path):
+def load_potions(path):
+    """Charge les données des potions depuis un fichier JSON."""
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     potions = data["potions"]
     if not isinstance(potions, list):
-        raise TypeError(f"Erreur : 'blocks' doit être une liste, reçu {type(potions)} : {potions}")
+        raise TypeError(f"Erreur : 'potions' doit être une liste, reçu {type(potions)} : {potions}")
     return potions
+
+def load_enhancement_stones(path):
+    """Charge les données des pierres d'amélioration depuis un fichier JSON."""
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    stones = data["stones"]
+    if not isinstance(stones, list):
+        raise TypeError(f"Erreur : 'stones' doit être une liste, reçu {type(stones)} : {stones}")
+    return stones
+
 

@@ -1,187 +1,42 @@
-from Phase1.data_loader import *
-from Phase1.elements import Element
-from Phase1.player import Player
-from Phase1.placement_manager import *
-from Phase1.craft_manager import check_block_craft
+
+import constants
 import pygame
-import pyscroll
-import pytmx
-import time
+import os
 
-
-
-class Game:
-    def __init__(self, screen):
-        self.screen = screen
-        self.running = True
-        self.clock = pygame.time.Clock()
-        self.native_surface = pygame.Surface((NATIVE_WIDTH, NATIVE_HEIGHT))
-        self.recipe = None
-
-
-        # Chargement de la carte
-        tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Maptest.tmx")
-        map_date = pyscroll.data.TiledMapData(tmx_data)
-        map_layer = pyscroll.orthographic.BufferedRenderer(map_date, (NATIVE_WIDTH, NATIVE_HEIGHT))
-
-        #Chargement du joueur
-        self.player = Player(30,30)
-
-        """Gestion des collisions"""
-        # Recuperation des rectangles de collision dans une liste
-        self.walls = []
-        self.craft_zones = []
-        self.drop_zones = []
-        self.potioncraft_zone = []
-        for obj in tmx_data.objects:
-            if obj.type == "collision":
-                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-            if obj.type == "craft_zone":
-                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-                self.craft_zones.append(Zone(obj.x, obj.y, obj.id, obj.type))
-            if obj.type == "drop_zone":
-                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-                self.drop_zones.append(Zone(obj.x, obj.y, obj.id, obj.type))
-            if obj.type == "potioncraft_zone":
-                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-                self.potioncraft_zone.append(Zone(obj.x, obj.y, obj.id, obj.type))
-
-        self.zones = self.craft_zones + self.drop_zones + self.potioncraft_zone
-
-        # Ajout des bords de l'écran comme des collisions
-        screen_width, screen_height = NATIVE_WIDTH, NATIVE_HEIGHT
-        self.walls.append(pygame.Rect(-5, 0, 5, screen_height))
-        self.walls.append(pygame.Rect(screen_width, 0, 5, screen_height))
-        self.walls.append(pygame.Rect(0, -5, screen_width, 5))
-        self.walls.append(pygame.Rect(0, screen_height, screen_width, 5))
-
-        """Gestion des blocks"""
-        # Charger les données des éléments depuis le JSON
-        self.elements_data = load_elements("Data/elements.json")
-        self.recipes_data = load_recipes("Data/recipes.json")
-        #self.potions_data = load_potion("Data/potions.json")
-
-        # Liste des éléments affichés sur la carte
-        self.elements = pygame.sprite.Group()
-
-        # Ajouter des éléments sur la carte (test emplacement aleatoire)
-        positions = [(10,10), (10,50)]  # Test position
-
-        for pos, data in zip(positions, self.elements_data[:2]):
-            element = Element(pos[0], pos[1], data)
-            self.elements.add(element)
-
-
-        #Dessiner le groupe de calques
-        self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
-        self.group.add(self.player)
-
-
-
-    def handling_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            """Action"""
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                    front_zone = get_front_tile(self.player, self.zones)
-                    if front_zone:
-                        if self.player.held_item:
-                            self.player.drop_element(front_zone)
-                        else:
-                            element = get_element_on_tile(front_zone, self.elements)
-                            if element:
-                                self.player.pick_element(element)
-
-
-        keys = pygame.key.get_pressed()
-        """Mouvement"""
-        if keys[pygame.K_LEFT]:
-            self.player.velocity[0] = -1
-            self.player.direction = 'LEFT'
-        elif keys[pygame.K_RIGHT]:
-            self.player.velocity[0] = 1
-            self.player.direction = 'RIGHT'
-        else:
-            self.player.velocity[0] = 0
-
-        if keys[pygame.K_UP]:
-            self.player.velocity[1] = -1
-            self.player.direction = 'UP'
-        elif keys[pygame.K_DOWN]:
-            self.player.velocity[1] = 1
-            self.player.direction = 'DOWN'
-        else:
-            self.player.velocity[1] = 0
-
-    def update(self):
-
-        # Déplacement du joueur
-        self.player.move()
-        self.player.update()
-
-        #Verification de collision
-        for sprite in self.group.sprites():
-            if sprite.feet.collidelist(self.walls) > -1:
-                sprite.move_back()
-
-        #Gestion des blocs en mouvement
-        for element in self.elements:
-            element.update_position(self.player)
-
-        #Gestion des crafts
-        elements_craft = pygame.sprite.Group()
-        crafting_element = pygame.sprite
-        for zone in self.craft_zones:
-            crafting_element = get_element_on_tile(zone, self.elements)
-            if crafting_element:
-                elements_craft.add(crafting_element)
-
-        recipe = check_block_craft(elements_craft, self.recipes_data)
-
-        if recipe:
-            print(f"Craft reussi : {recipe['result_name']}")
-            for el in elements_craft:
-                self.elements.remove(el)
-
-            result_data = next(e for e in self.elements_data if e["id"] == recipe['result'])
-
-            position_crafted_element = self.craft_zones[0].rect
-            new_element = Element(position_crafted_element[0] + 8 , position_crafted_element[1] + 8, result_data)
-            self.elements.add(new_element)
-
-    def display(self):
-        self.native_surface.fill((100, 100, 100))
-        self.group.update()
-        self.group.center(self.player.rect.center)
-        self.group.draw(self.native_surface)
-        self.elements.draw(self.native_surface)
-
-        # Redimensionner la surface et l'afficher sur l'écran
-        scaled_surface = pygame.transform.scale(self.native_surface, (WINDOW_WIDTH, WINDOW_HEIGHT))
-        self.screen.blit(scaled_surface, (0, 0))
-
-        pygame.display.flip()
-
-    def run(self):
-        while self.running:
-            self.player.save_location()
-            self.handling_events()
-            self.update()
-            self.display()
-            self.clock.tick(60)
+# Import de notre classe Game mise à jour
+from game import Game
 
 """Gestion du scaling de l'ecran"""
-#Taille native de la carte
+# Taille native de la carte
 NATIVE_WIDTH, NATIVE_HEIGHT = 320, 224
-#Taille de la fenetre affichée
-SCALE = 3 # Definir dans les parametres du jeu ou en fonction de l'ecran du joueur
+# Taille de la fenetre affichée
+SCALE = 3  # Définir dans les paramètres du jeu ou en fonction de l'écran du joueur
 WINDOW_WIDTH = NATIVE_WIDTH * SCALE
 WINDOW_HEIGHT = NATIVE_HEIGHT * SCALE
 
-pygame.init()
-pygame.display.set_caption("Pixel-Alchemist")
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-game = Game(screen)
-game.run()
+
+def main():
+    # S'assurer que tous les dossiers nécessaires existent
+    required_dirs = [
+        "Assets/Art/Items/Potions",
+        "Assets/Art/Items/Stones"
+    ]
+
+    for directory in required_dirs:
+        os.makedirs(directory, exist_ok=True)
+
+    # Initialiser Pygame
+    pygame.init()
+    pygame.display.set_caption("Pixel-Alchemist")
+    screen = pygame.display.set_mode((constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT))
+
+    # Créer et exécuter le jeu
+    game = Game(screen)
+    game.run()
+
+    # Quitter proprement
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()

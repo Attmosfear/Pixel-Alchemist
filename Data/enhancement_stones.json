@@ -1,0 +1,18 @@
+{
+    "stones": [
+        {
+            "id": 1,
+            "name": "Pierre de Puissance",
+            "type": "power",
+            "texture": "power_stone.png",
+            "description": "Augmente la puissance d'une potion"
+        },
+        {
+            "id": 2,
+            "name": "Pierre de Durée",
+            "type": "duration",
+            "texture": "duration_stone.png",
+            "description": "Augmente la durée d'effet d'une potion"
+        }
+    ]
+}
