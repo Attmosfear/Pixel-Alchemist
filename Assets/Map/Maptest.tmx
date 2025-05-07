@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="10" height="7" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="42">
  <tileset firstgid="1" source="TileSetTest.tsx"/>
+ <tileset firstgid="241" source="laboratoire.tsx"/>
  <layer id="1" name="Sol" width="10" height="7">
   <data encoding="csv">
-5,5,5,171,12,12,12,14,12,21,
-5,12,12,12,12,12,12,12,12,12,
-12,12,12,12,12,12,97,98,12,12,
-12,12,105,106,12,12,113,114,12,12,
-12,12,121,122,12,12,12,12,12,12,
-5,12,12,12,12,12,12,12,169,12,
-5,5,5,12,12,15,12,12,12,21
+5,5,5,171,245,245,245,14,245,21,
+5,245,245,245,245,245,245,245,245,245,
+245,245,245,245,245,245,97,98,245,245,
+245,245,105,106,245,245,113,114,245,245,
+245,245,121,122,245,245,245,245,245,245,
+5,245,245,245,245,245,245,245,245,245,
+5,5,5,245,245,15,245,245,245,21
 </data>
  </layer>
  <objectgroup id="2" name="objects"/>
