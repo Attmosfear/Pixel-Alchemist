@@ -1,9 +1,10 @@
 from Phase1.animations import *
+from Phase1.craft_manager import *
 from Phase1.data_loader import *
+from Phase1.element_factory import ElementFactory
 from Phase1.elements import Element
 from Phase1.player import Player
 from Phase1.placement_manager import *
-from Phase1.craft_manager import check_block_craft
 from Phase1.potions import Potion
 from Phase1.enhancement_stones import EnhancementStone
 from Phase1.ui_manager import UIManager
@@ -11,7 +12,6 @@ from constants import *
 import pygame
 import pyscroll
 import pytmx
-
 
 
 class Game:
@@ -22,7 +22,7 @@ class Game:
         self.native_surface = pygame.Surface((NATIVE_WIDTH, NATIVE_HEIGHT))
         self.recipe = None
 
-        #Variable pour le crafting de potion
+        # Variable pour le crafting de potion
         self.crafting_in_progress = False
         self.crafting_timer = 0
         self.crafting_time_required = 2.0  # 2 secondes
@@ -31,6 +31,9 @@ class Game:
         # Chargement de l'UI et du gestionnaire d'animations
         self.ui = UIManager(WINDOW_WIDTH, WINDOW_HEIGHT)
         self.animation_manager = AnimationManager()
+
+        # Initialisation du gestionnaire de crafting automatique
+        self.auto_craft_manager = AutoCraftManager(self)
 
         # Chargement des données
         self.elements_data = load_elements("Data/elements.json")
@@ -57,6 +60,7 @@ class Game:
         self.craft_zones = []
         self.drop_zones = []
         self.potioncraft_zones = []
+        self.creation_zones = []  # Nouvelle liste pour les zones de création d'éléments de base
 
         for obj in tmx_data.objects:
             if obj.type == "collision":
@@ -70,8 +74,15 @@ class Game:
             if obj.type == "potioncraft_zone":
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
                 self.potioncraft_zones.append(Zone(obj.x, obj.y, obj.id, obj.type))
+            if obj.type == "zone_creation":
+                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                # Créer une zone de création avec son nom (Feu, Eau, Terre, Air)
+                zone = Zone(obj.x, obj.y, obj.id, obj.type)
+                zone.name = obj.name  # Ajouter le nom de l'élément à créer
+                self.creation_zones.append(zone)
 
-        self.zones = self.craft_zones + self.drop_zones + self.potioncraft_zones
+        # Regrouper toutes les zones pour la détection
+        self.zones = self.craft_zones + self.drop_zones + self.potioncraft_zones + self.creation_zones
 
         # Ajout des bords de l'écran comme des collisions
         screen_width, screen_height = NATIVE_WIDTH, NATIVE_HEIGHT
@@ -123,6 +134,32 @@ class Game:
                 if event.key == pygame.K_e:
                     front_zone = get_front_tile(self.player, self.zones)
                     if front_zone:
+                        # Si on est devant une zone de création d'élément
+                        if front_zone.type == "zone_creation":
+                            if not self.player.held_item:
+                                # Si la zone n'a pas d'objet dessus ou si l'objet a déjà été récupéré
+                                if not front_zone.have_object:
+                                    # Créer un nouvel élément de base et l'assigner directement au joueur
+                                    new_element = ElementFactory.create_base_element(self, front_zone.name)
+                                    if new_element:
+                                        # L'élément est déjà assigné au joueur dans ElementFactory
+                                        self.player.held_item = new_element
+                                        self.ui.show_message(f"Élément {front_zone.name} créé et récupéré !")
+                                else:
+                                    # Il y a déjà un élément sur cette zone
+                                    # Récupérer l'élément existant
+                                    game_objects = {
+                                        'elements': self.elements,
+                                        'potions': self.potions,
+                                        'stones': self.enhancement_stones
+                                    }
+                                    obj = get_element_on_tile(front_zone, game_objects, None)
+                                    if obj:
+                                        success = self.player.pick_element(obj)
+                                        if success:
+                                            self.ui.show_message(f"Élément {obj.name} récupéré !")
+                            continue
+
                         # Si on est devant la zone de résultat et qu'on a un élément placé
                         if front_zone.type == "potioncraft_zone" and front_zone.id == 37:
                             if self.potion_craft_state["element"] is not None and not self.crafting_in_progress:
@@ -363,7 +400,11 @@ class Game:
         self.ui.update(dt)
         self.animation_manager.update(dt)
 
-        # Gérer le timer de crafting
+        # Mettre à jour le gestionnaire de crafting automatique
+        self.auto_craft_manager.check_for_crafting()  # Vérifier s'il y a des éléments à crafter
+        self.auto_craft_manager.update(dt)  # Mettre à jour le timer de crafting
+
+        # Gérer le timer de crafting de potion
         if self.crafting_in_progress:
             self.crafting_timer += dt
             self.crafting_animation_frame = (self.crafting_animation_frame + 1) % 30  # Pour une animation simple

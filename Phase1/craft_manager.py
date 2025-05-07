@@ -1,20 +1,175 @@
 from Phase1.potions import Potion
+import pygame
+from Phase1.animations import Animation, AnimationManager
+from Phase1.elements import Element
 
-def check_block_craft(posed_elements, recipes):
+class CraftingAnimation(Animation):
+    """Animation pour le crafting automatique d'éléments"""
+
+    def __init__(self, duration=2.0):
+        super().__init__(duration)
+        self.particles = []
+        for i in range(10):
+            # Créer des particules avec positions et couleurs aléatoires
+            self.particles.append({
+                'x': 0, 'y': 0,  # Seront mis à jour lors du dessin
+                'angle': i * 36,
+                'radius': 2 + i % 3,
+                'color': (200 + i % 55, 100 + i % 155, 50 + i % 205)
+            })
+
+    def draw(self, surface, position):
+        """Dessine l'animation de crafting"""
+        center_x, center_y = position
+        progress = self.get_progress()
+
+        # Dessiner des particules qui tournent
+        for particle in self.particles:
+            angle = particle['angle'] + progress * 720  # 2 rotations complètes
+            radius = 5 + particle['radius'] + progress * 15
+            x = center_x + radius * pygame.math.Vector2(1, 0).rotate(angle).x
+            y = center_y + radius * pygame.math.Vector2(1, 0).rotate(angle).y
+
+            # Faire grossir puis rétrécir les particules
+            size = int(particle['radius'] * (1 - abs(progress - 0.5) * 2)) + 2
+
+            pygame.draw.circle(surface, particle['color'], (int(x), int(y)), size)
+
+        # Afficher le progrès
+        if progress < 1.0:
+            font = pygame.font.SysFont('Arial', 12)
+            progress_percent = int(progress * 100)
+            text_surface = font.render(f"{progress_percent}%", True, (255, 255, 255))
+            surface.blit(
+                text_surface,
+                (center_x - text_surface.get_width() // 2, center_y - 20)
+            )
+
+
+class AutoCraftManager:
+    """Gestionnaire pour le crafting automatique d'éléments"""
+
+    def __init__(self, game):
+        self.game = game
+        self.craft_in_progress = False
+        self.craft_timer = 0
+        self.craft_time_required = 2.0
+        self.craft_center = None
+        self.elements_to_craft = []
+
+    def check_for_crafting(self):
+        """Vérifie si des éléments sont sur la table de craft et lance le crafting si nécessaire"""
+        if self.craft_in_progress:
+            return
+
+        # Collecter les éléments sur les zones de craft
+        elements_on_craft = []
+        craft_center_x, craft_center_y = 0, 0
+
+        for zone in self.game.craft_zones:
+            if zone.have_object:
+                # Chercher l'élément sur cette zone
+                for element in self.game.elements:
+                    if not element.held_by_player and zone.rect.colliderect(element.rect):
+                        elements_on_craft.append(element)
+                        # Calculer le centre pour l'animation
+                        craft_center_x += zone.rect.centerx
+                        craft_center_y += zone.rect.centery
+                        break
+
+        # S'il y a exactement 2 éléments, lancer le crafting automatique
+        if len(elements_on_craft) == 2:
+            # Calculer le centre moyen pour l'animation
+            craft_center_x //= len(elements_on_craft)
+            craft_center_y //= len(elements_on_craft)
+            self.craft_center = (craft_center_x, craft_center_y)
+
+            # Vérifier s'il existe une recette pour ces éléments
+            recipe = self.game.check_block_craft(elements_on_craft, self.game.recipes_data)
+
+            if recipe:
+                self.craft_in_progress = True
+                self.craft_timer = 0
+                self.elements_to_craft = elements_on_craft
+
+                # Ajouter l'animation
+                craft_anim = CraftingAnimation(duration=self.craft_time_required)
+                self.game.animation_manager.add_animation(
+                    "element_crafting",
+                    craft_anim,
+                    self.craft_center
+                )
+
+                self.game.ui.show_message("Crafting en cours...", 2.0)
+
+    def update(self, dt):
+        """Met à jour le processus de crafting"""
+        if not self.craft_in_progress:
+            return
+
+        self.craft_timer += dt
+
+        # Vérifier si le temps requis est écoulé
+        if self.craft_timer >= self.craft_time_required:
+            self.craft_in_progress = False
+            self.craft_timer = 0
+            self.complete_crafting()
+
+    def complete_crafting(self):
+        """Termine le processus de crafting en créant le nouvel élément"""
+        if not self.elements_to_craft or len(self.elements_to_craft) != 2:
+            self.game.animation_manager.remove_animation("element_crafting")
+            return
+
+        # Vérifier à nouveau qu'il existe une recette pour ces éléments
+        recipe = self.game.check_block_craft(self.elements_to_craft, self.game.recipes_data)
+
+        if recipe:
+            # Supprimer les éléments utilisés
+            for element in self.elements_to_craft:
+                self.game.elements.remove(element)
+
+                # Marquer les zones comme libres
+                for zone in self.game.craft_zones:
+                    if zone.rect.colliderect(element.rect):
+                        zone.have_object = False
+
+            # Trouver les données de l'élément résultant
+            result_data = next(e for e in self.game.elements_data if e["id"] == recipe['result'])
+
+            # Créer le nouvel élément au centre de la table de craft
+            if self.craft_center:
+                new_element = Element(self.craft_center[0], self.craft_center[1], result_data)
+                self.game.elements.add(new_element)
+
+                # Marquer la zone comme occupée
+                # On choisit arbitrairement la première zone de craft pour y placer le résultat
+                if self.game.craft_zones:
+                    self.game.craft_zones[0].have_object = True
+
+                # Donner de l'XP au joueur
+                self.game.player.gain_experience(5)
+                self.game.ui.show_message(f"Élément {recipe['result_name']} créé!", 3.0)
+
+        # Réinitialiser
+        self.elements_to_craft = []
+        self.craft_center = None
+        self.game.animation_manager.remove_animation("element_crafting")
+
+
+def check_block_craft(elements, recipes):
     """
-    posed_elements : liste des éléments posés sur la table de craft
-    recipes : liste des recettes (chargées depuis recipes.json)
+    Vérifie si une combinaison d'éléments correspond à une recette
+    :param elements: Liste des éléments à vérifier
+    :param recipes: Liste des recettes disponibles
+    :return: La recette correspondante ou None
     """
-    posed_ids = sorted([el.id for el in posed_elements])
-
-
+    posed_ids = sorted([el.id for el in elements])
 
     for recipe in recipes:
         if sorted(recipe["ingredients"]) == posed_ids:
             return recipe  # On retourne toute la recette
     return None
-
-
 
 class PotionCraftManager:
     def __init__(self, potions_data):
