@@ -74,16 +74,18 @@ class Player(pygame.sprite.Sprite):
         return True
 
     def drop_element(self, zone):
-        """
-        Permet au joueur de poser un élément
-        :param zone: zone sur laquelle l'objet est posé
-        :return: Modification dynamique
-        """
         if self.held_item:
-            print(f"Objet déposé : {self.held_item}")
+            # Vérifier si la zone est déjà occupée
+            if zone.have_object:
+                print("Cette zone contient déjà un objet")
+                return False
+
             self.held_item.held_by_player = False
             self.held_item.rect.center = zone.rect.center
+            item = self.held_item
             self.held_item = None
+
+            # Marquer la zone comme occupée
             zone.have_object = True
             return True
         else:

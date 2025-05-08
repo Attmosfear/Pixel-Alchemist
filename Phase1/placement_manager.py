@@ -1,4 +1,5 @@
-import pygame
+from Phase1.elements import *
+
 
 class Zone(pygame.sprite.Sprite):
     def __init__(self, x, y, id, type):
@@ -71,3 +72,38 @@ def get_element_on_tile(zone, game_objects, potion_craft_state=None):
                 return obj
 
     return None
+
+def create_base_element(self, zone_name):
+    """
+    rée un élément de base en fonction du nom de la zone
+    :param zone_name: Nom de la zone (Feu, Eau, Terre, Air)
+    :return: L'élément créé ou None si la création a échoué
+    """
+    # Trouver la donnée de l'élément correspondant au nom de la zone
+    element_data = None
+    for data in self.elements_data:
+        if data["name"] == zone_name:
+            element_data = data
+            break
+
+    if element_data is None:
+        print(f"DEBUG: Aucune donnée trouvée pour l'élément {zone_name}")
+        return None
+
+    # Créer l'élément
+    # Trouver la zone de création correspondante
+    creation_zone = None
+    for zone in self.creation_zones:
+        if zone.name == zone_name:
+            creation_zone = zone
+            break
+
+    if creation_zone is None:
+        print(f"DEBUG: Aucune zone trouvée pour créer l'élément {zone_name}")
+        return None
+
+    # Créer l'élément au centre de la zone
+    new_element = Element(creation_zone.rect.centerx, creation_zone.rect.centery, element_data)
+    self.elements.add(new_element)
+
+    print(f"DEBUG: Élément {zone_name} créé")
