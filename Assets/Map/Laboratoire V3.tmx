@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="49">
  <tileset firstgid="1" source="Laboratoire.tsx"/>
  <tileset firstgid="736" source="Dongeun.tsx"/>
  <layer id="1" name="Sol" width="16" height="14">
@@ -74,6 +74,43 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="7" name="Zone">
+  <object id="1" type="collision" x="41.3333" y="8" width="44" height="77.3333"/>
+  <object id="4" type="colision" x="260" y="68" width="25.3333" height="120"/>
+  <object id="6" type="colision" x="257.333" y="66.6667" width="56" height="121.333"/>
+  <object id="7" type="colision" x="389.333" y="66.0002" width="56" height="121.333"/>
+  <object id="12" type="collision" x="104" y="5.33333" width="77.3333" height="85.3333"/>
+  <object id="13" type="collision" x="-1.33333" y="1.33333" width="510.667" height="26.6667"/>
+  <object id="14" type="collision" x="481.333" y="1.33333" width="28" height="436"/>
+  <object id="15" type="collision" x="4" y="418.667" width="506.667" height="26.6667"/>
+  <object id="16" type="collision" x="-5.33333" y="2.66667" width="33.3333" height="442.667"/>
+  <object id="18" type="collision" x="28" y="258.667" width="66.6667" height="62.6667"/>
+  <object id="19" type="collision" x="125.333" y="257.333" width="258.667" height="61.3333"/>
+  <object id="20" type="collision" x="414.667" y="260" width="66.6667" height="58.6667"/>
+  <object id="21" type="collision" x="446.667" y="309.333" width="33.3333" height="105.333"/>
+  <object id="23" type="collision" x="33.3333" y="382.667" width="29.3333" height="34.6667"/>
+  <object id="26" name="Air" type="zone_creation" x="221.333" y="312" width="65.3333" height="41.3333"/>
+  <object id="27" x="325.333" y="97.3333" width="54.6667" height="64"/>
+  <object id="28" type="craft_zone" x="64" y="166.667" width="29.3333" height="29.3333"/>
+  <object id="29" type="craft_zone" x="130.667" y="168" width="26.6667" height="30.6667"/>
+  <object id="30" type="craft_zone" x="96" y="129.333" width="32" height="29.3333"/>
+  <object id="31" type="potioncraft_zone" x="257.333" y="92" width="28" height="40"/>
+  <object id="32" type="potioncraft_zone" x="416" y="89.3333" width="28" height="40"/>
+  <object id="33" type="drop_zone" x="94.6667" y="382.667" width="32" height="30.6667"/>
+  <object id="34" type="drop_zone" x="126.667" y="381.333" width="29.3333" height="36"/>
+  <object id="35" type="drop_zone" x="222.667" y="384" width="32" height="28"/>
+  <object id="36" type="drop_zone" x="256" y="382.667" width="28" height="33.3333"/>
+  <object id="37" type="drop_zone" x="352" y="386.667" width="30.6667" height="25.3333"/>
+  <object id="38" type="drop_zone" x="385.333" y="385.333" width="30.6667" height="26.6667"/>
+  <object id="40" type="drop_zone" x="189.333" y="220" width="34.6667" height="33.3333"/>
+  <object id="42" type="potioncraft_zone" x="333.333" y="86.6667" width="36" height="32"/>
+  <object id="43" type="drop_zone" x="225.333" y="220.667" width="29.3334" height="33.3333"/>
+  <object id="44" type="trapp_zone" x="28" y="314.667" width="40" height="38.6667"/>
+  <object id="45" name="Feu" type="zone_creation" x="120" y="49.3333" width="42.6667" height="42.6667"/>
+  <object id="46" type="collision" x="65.3333" y="194.667" width="28" height="28"/>
+  <object id="47" type="collision" x="129.333" y="193.333" width="28" height="26.6667"/>
+  <object id="48" type="collision" x="98.6667" y="160" width="24" height="20"/>
+ </objectgroup>
  <layer id="4" name="élément suplémentaire" width="16" height="14">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
