@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="16">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="19">
  <tileset firstgid="1" source="Cave.tsx"/>
  <tileset firstgid="599" source="Labo.tsx"/>
  <layer id="1" name="Sol" width="16" height="14">
@@ -92,21 +92,25 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="7" name="Zone">
+ <objectgroup id="7" class="collision">
   <object id="1" type="quest_zone" x="260" y="18.6667" width="86.6667" height="76"/>
-  <object id="2" name="Eau" type="zone_creation" x="30.6667" y="44" width="68" height="56"/>
-  <object id="3" x="-4" y="-4" width="516" height="66.6667"/>
-  <object id="4" x="480" y="40" width="32" height="408"/>
-  <object id="5" x="-2.66667" y="410.667" width="489.333" height="38.6667"/>
-  <object id="7" x="-4" y="-8" width="34.6667" height="450.667"/>
-  <object id="8" x="22.6667" y="190.667" width="72" height="62.6667"/>
-  <object id="9" x="97.3333" y="202.667" width="318.667" height="52"/>
+  <object id="16" type="quest_zone" x="260" y="18.6667" width="86.6667" height="76"/>
+  <object id="2" name="Eau" type="zone_creation" x="36.6667" y="44" width="55.6667" height="49.3333"/>
+  <object id="3" type="collision" x="-4" y="-4" width="516" height="66.6667"/>
+  <object id="4" type="collision" x="480" y="40" width="32" height="408"/>
+  <object id="5" type="collision" x="-2.33334" y="415" width="489" height="34.3334"/>
+  <object id="7" type="collision" x="-4" y="-7.66667" width="34.6667" height="450.667"/>
+  <object id="8" type="collision" x="22.6667" y="190.667" width="72" height="62.6667"/>
+  <object id="9" type="collision" x="98" y="203" width="318.667" height="52"/>
   <object id="10" type="map_zone" x="324" y="181.333" width="56" height="77.3333"/>
-  <object id="11" x="94.6667" y="301.333" width="68" height="42.6667"/>
-  <object id="12" x="236" y="318.667" width="68" height="64"/>
+  <object id="11" type="collision" x="100.334" y="302" width="60" height="45"/>
+  <object id="12" x="240.333" y="319.667" width="64" height="63"/>
   <object id="13" type="ladder_zone" x="157.333" y="54.6667" width="37.3333" height="44"/>
   <object id="14" name="Terre" type="zone_creation" x="406.667" y="74.6667" width="54.6667" height="38.6667"/>
-  <object id="15" x="457.333" y="381.333" width="22.6667" height="32"/>
+  <object id="15" type="collision" x="457.333" y="381.333" width="22.6667" height="32"/>
+  <object id="17" type="trap_spawn" x="129.333" y="112.333">
+   <point/>
+  </object>
  </objectgroup>
  <layer id="6" name="Truc en plus" width="16" height="14">
   <data encoding="csv">

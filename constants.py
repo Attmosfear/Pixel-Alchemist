@@ -1,12 +1,16 @@
-# Taille native de la carte (dimension réelle en pixels)
-NATIVE_WIDTH = 320
-NATIVE_HEIGHT = 224
+# Définir directement la taille de la fenêtre sans facteur d'échelle
+# Nous n'utilisons plus SCALE, mais conservons les dimensions natives
+# pour la compatibilité avec certaines fonctions de calcul
 
-# Facteur d'échelle pour l'affichage
-# À terme, cette valeur pourra être chargée depuis un fichier de configuration
-# ou définie via une interface de paramètres
-SCALE = 3
+# Dimensions originales du jeu (utilisées pour les calculs)
+NATIVE_WIDTH = 512  # Augmenté pour voir plus de la carte
+NATIVE_HEIGHT = 448  # Augmenté pour voir plus de la carte
 
-# Taille de la fenêtre affichée
-WINDOW_WIDTH = NATIVE_WIDTH * SCALE
-WINDOW_HEIGHT = NATIVE_HEIGHT * SCALE
+# Définir la fenêtre d'affichage avec les mêmes dimensions
+# pyscroll s'occupera du zoom directement
+WINDOW_WIDTH = NATIVE_WIDTH
+WINDOW_HEIGHT = NATIVE_HEIGHT
+
+# Nous gardons SCALE à 1 pour la compatibilité, mais ce n'est plus utilisé
+# pour le scaling de la fenêtre
+SCALE = 1
