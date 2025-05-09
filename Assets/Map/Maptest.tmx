@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="10" height="7" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="42">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="10" height="7" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="44">
  <tileset firstgid="1" source="TileSetTest.tsx"/>
  <tileset firstgid="241" source="laboratoire.tsx"/>
  <layer id="1" name="Sol" width="10" height="7">
   <data encoding="csv">
-5,5,5,171,245,245,245,14,245,21,
-5,245,245,245,245,245,245,245,245,245,
-245,245,245,245,245,245,97,98,245,245,
-245,245,105,106,245,245,113,114,245,245,
-245,245,121,122,245,245,245,245,245,245,
-5,245,245,245,245,245,245,245,245,245,
-5,5,5,245,245,15,245,245,245,21
+5,5,5,171,12,12,12,14,12,21,
+5,12,12,12,12,12,12,12,12,12,
+12,12,12,12,12,12,97,98,12,12,
+12,12,105,106,12,12,113,114,12,12,
+12,12,121,122,12,12,12,12,12,12,
+5,12,12,12,12,12,12,12,218,12,
+5,5,5,12,12,15,12,12,12,21
 </data>
  </layer>
- <objectgroup id="2" name="objects"/>
  <objectgroup id="3" name="Zones">
   <object id="18" type="drop_zone" x="0" y="0" width="32" height="32"/>
   <object id="21" type="drop_zone" x="32" y="0" width="32" height="32"/>
   <object id="22" type="drop_zone" x="64" y="0" width="32" height="32"/>
-  <object id="23" type="drop_zone" x="-0.375" y="32.25" width="32.5" height="31.5"/>
+  <object id="23" type="drop_zone" x="-0.0416667" y="31.9167" width="32.5" height="31.5"/>
   <object id="24" type="drop_zone" x="-0.25" y="160.25" width="32.5" height="31.5"/>
   <object id="25" type="drop_zone" x="-0.25" y="192.25" width="32.5" height="31.5"/>
   <object id="26" type="drop_zone" x="31.75" y="192.125" width="32.5" height="31.5"/>
@@ -26,8 +25,6 @@
   <object id="28" type="drop_zone" x="287.875" y="191.875" width="32.5" height="31.5"/>
   <object id="29" type="drop_zone" x="287.75" y="-0.25" width="32.5" height="31.5"/>
   <object id="30" type="craft_zone" x="191.932" y="96.2045" width="32.5" height="31.5"/>
-  <object id="32" type="craft_zone" x="224.25" y="96.1591" width="31.7727" height="31.5"/>
-  <object id="33" type="craft_zone" x="224.386" y="64.3409" width="31.4091" height="31.5"/>
   <object id="34" type="craft_zone" x="191.932" y="64.2955" width="32.5" height="31.5"/>
   <object id="36" type="potioncraft_zone" x="63.75" y="95.8864" width="32.5" height="31.4091"/>
   <object id="37" type="potioncraft_zone" x="96.25" y="95.75" width="31.6818" height="31.5"/>

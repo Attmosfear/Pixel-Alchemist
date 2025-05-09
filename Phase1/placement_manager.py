@@ -9,25 +9,31 @@ class Zone(pygame.sprite.Sprite):
         self.type = type
         self.have_object = False
 
+
 def get_front_tile(player, zones):
     """
-    Verifie la presence d'une tuile devant le joueur
-    # :return: None s'il y en a pas ou la tuile si elle est presente
+    Vérifie la présence d'une tuile devant le joueur
+    :return: None s'il y en a pas ou la tuile si elle est présente
     """
+    # Ajustement des distances pour mieux détecter les zones
     player_position = player.rect.center
-    front_tile_position = (player_position[0], player_position[1] - 25)
+    offset = 40  # Distance de détection ajustée
+
     if player.direction == 'UP':
-        front_tile_position = (player_position[0], player_position[1] - 15)
+        front_tile_position = (player_position[0], player_position[1] - offset)
     elif player.direction == 'DOWN':
-        front_tile_position = (player_position[0], player_position[1] + 25)
+        front_tile_position = (player_position[0], player_position[1] + offset)
     elif player.direction == 'LEFT':
-        front_tile_position = (player_position[0] - 25, player_position[1] )
+        front_tile_position = (player_position[0] - offset, player_position[1])
     elif player.direction == 'RIGHT':
-        front_tile_position = (player_position[0] + 25, player_position[1])
+        front_tile_position = (player_position[0] + offset, player_position[1])
+    else:
+        # Direction par défaut si non spécifiée
+        front_tile_position = (player_position[0], player_position[1] + offset)
 
     for zone in zones:
-        if  zone.rect.collidepoint(front_tile_position):
-            print("La zone presente devant est ", zone.type, zone.id)
+        if zone.rect.collidepoint(front_tile_position):
+            print("La zone présente devant est ", zone.type, zone.id)
             return zone
 
     return None
@@ -73,9 +79,10 @@ def get_element_on_tile(zone, game_objects, potion_craft_state=None):
 
     return None
 
+
 def create_base_element(self, zone_name):
     """
-    rée un élément de base en fonction du nom de la zone
+    Crée un élément de base en fonction du nom de la zone
     :param zone_name: Nom de la zone (Feu, Eau, Terre, Air)
     :return: L'élément créé ou None si la création a échoué
     """

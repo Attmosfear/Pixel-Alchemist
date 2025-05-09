@@ -136,23 +136,27 @@ class UIManager:
         # Vérifier si la souris est sur un objet
         tooltip_text = None
 
+        # Obtenir la position de la souris dans l'espace de jeu
+        # Il n'y a plus de scale à prendre en compte, donc on utilise directement les coordonnées
+        game_mouse_pos = mouse_pos
+
         # Vérifier les potions d'abord (priorité)
         for potion in potions:
-            if potion.rect.collidepoint(mouse_pos):
+            if potion.rect.collidepoint(game_mouse_pos):
                 tooltip_text = f"{potion.name}: {potion.effect}"
                 break
 
         # Ensuite les éléments
         if not tooltip_text:
             for element in elements:
-                if element.rect.collidepoint(mouse_pos):
+                if element.rect.collidepoint(game_mouse_pos):
                     tooltip_text = f"{element.name} (Tier {element.tier})"
                     break
 
         # Enfin les pierres
         if not tooltip_text:
             for stone in stones:
-                if stone.rect.collidepoint(mouse_pos):
+                if stone.rect.collidepoint(game_mouse_pos):
                     if stone.stone_type == "power":
                         tooltip_text = "Pierre de Puissance"
                     else:

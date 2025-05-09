@@ -1,5 +1,51 @@
 {
-    "activeFile": "",
+    "activeFile": "Map Laboratoire.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "Tous les Fichiers (*)",
+    "fileStates": {
+        "Cave.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Labo.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Map Cave.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 3,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 210.8333333333333,
+                "y": 153
+            }
+        },
+        "Map Laboratoire.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 3,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 150.5,
+                "y": 112
+            }
+        }
+    },
     "openFiles": [
+        "Map Laboratoire.tmx",
+        "Labo.tsx",
+        "Cave.tsx",
+        "Map Cave.tmx"
+    ],
+    "project": "",
+    "recentFiles": [
+        "Map Cave.tmx",
+        "Cave.tsx",
+        "Labo.tsx",
+        "Map Laboratoire.tmx"
     ]
 }

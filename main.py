@@ -8,7 +8,7 @@ from game import Game
 
 """Gestion du scaling de l'ecran"""
 # Taille native de la carte
-NATIVE_WIDTH, NATIVE_HEIGHT = 320, 224
+NATIVE_WIDTH, NATIVE_HEIGHT = 512, 448
 # Taille de la fenetre affichée
 SCALE = 3  # Définir dans les paramètres du jeu ou en fonction de l'écran du joueur
 WINDOW_WIDTH = NATIVE_WIDTH * SCALE

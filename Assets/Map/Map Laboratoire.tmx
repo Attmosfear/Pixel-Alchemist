@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="40">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="45">
  <tileset firstgid="1" source="Labo.tsx"/>
  <tileset firstgid="736" source="Cave.tsx"/>
  <layer id="1" name="Sol" width="16" height="14">
@@ -111,39 +111,45 @@
 </data>
  </layer>
  <objectgroup id="7" name="Zone">
-  <object id="1" x="94.6421" y="35.8987" width="96.2739" height="63.6387"/>
-  <object id="2" x="34.267" y="4.89528" width="58.7434" height="88.1151"/>
-  <object id="3" x="-1.63176" y="-3.26352" width="510.741" height="34.267"/>
-  <object id="4" x="483.001" y="-1.63176" width="32.6352" height="448.734"/>
-  <object id="5" x="3.26352" y="419.363" width="514.005" height="27.7399"/>
-  <object id="6" x="0" y="3.55271e-15" width="31.0035" height="442.207"/>
-  <object id="7" x="22.8447" y="252.923" width="71.7975" height="63.6387"/>
-  <object id="8" type="trap_zone" x="35.8987" y="313.298" width="29.3717" height="40.794"/>
-  <object id="9" x="127.277" y="252.923" width="254.555" height="66.9022"/>
-  <object id="10" x="414.467" y="256.186" width="68.534" height="65.2704"/>
-  <object id="11" x="443.839" y="308.403" width="39.1623" height="102.801"/>
-  <object id="15" x="256.186" y="68.534" width="62.0069" height="117.487"/>
-  <object id="16" x="386.727" y="65.2704" width="58.7434" height="122.382"/>
-  <object id="17" x="329.616" y="91.3786" width="47.3211" height="73.4292"/>
-  <object id="18" type="craft_zone" x="65.2704" y="164.808" width="29.3717" height="31.0035"/>
-  <object id="19" x="63.6387" y="192.548" width="31.0035" height="27.7399"/>
-  <object id="20" type="craft_zone" x="128.909" y="164.808" width="31.0035" height="27.7399"/>
-  <object id="21" x="128.909" y="187.653" width="31.0035" height="34.267"/>
-  <object id="22" type="craft_zone" x="96.2739" y="128.909" width="29.3717" height="27.7399"/>
-  <object id="23" x="101.169" y="158.281" width="19.5811" height="16.3176"/>
-  <object id="24" name="Air" type="zone_creation" x="221.92" y="313.298" width="62.0069" height="44.0575"/>
-  <object id="25" type="drop_zone" x="97.9057" y="386.727" width="29.3717" height="24.4764"/>
-  <object id="26" type="drop_zone" x="127.277" y="385.911" width="29.3717" height="24.4764"/>
-  <object id="27" type="drop_zone" x="223.551" y="384.28" width="29.3717" height="24.4764"/>
-  <object id="28" type="drop_zone" x="252.923" y="385.911" width="29.3717" height="24.4764"/>
-  <object id="29" type="drop_zone" x="352.46" y="385.911" width="29.3717" height="24.4764"/>
-  <object id="30" type="drop_zone" x="385.096" y="385.911" width="29.3717" height="24.4764"/>
-  <object id="31" type="drop_zone" x="195.811" y="227.631" width="29.3717" height="24.4764"/>
-  <object id="32" type="drop_zone" x="226.815" y="225.999" width="29.3717" height="24.4764"/>
+  <object id="1" type="collision" x="102.642" y="35.8987" width="84.2739" height="57.3054"/>
+  <object id="2" type="collision" x="38.267" y="4.89528" width="51.4101" height="82.1151"/>
+  <object id="3" type="collision" x="-1.63176" y="-3.26352" width="510.741" height="34.267"/>
+  <object id="4" type="collision" x="483.001" y="-1.63176" width="32.6352" height="448.734"/>
+  <object id="5" type="collision" x="3.26352" y="419.363" width="514.005" height="27.7399"/>
+  <object id="6" type="collision" x="0" y="3.55271e-15" width="31.0035" height="442.207"/>
+  <object id="7" type="collision" x="22.8447" y="252.923" width="71.7975" height="63.6387"/>
+  <object id="8" type="trap_zone" x="30.8987" y="319.798" width="32.3717" height="31.294"/>
+  <object id="9" type="collision" x="127.277" y="252.923" width="254.555" height="66.9022"/>
+  <object id="10" type="collision" x="414.467" y="256.186" width="68.534" height="65.2704"/>
+  <object id="11" type="collision" x="448.506" y="304.403" width="34.4956" height="113.801"/>
+  <object id="15" type="collision" x="257.853" y="65.8673" width="60.3402" height="124.82"/>
+  <object id="16" type="collision" x="386.727" y="65.2704" width="58.4101" height="125.382"/>
+  <object id="17" type="collision" x="329.616" y="91.3786" width="47.3211" height="73.4292"/>
+  <object id="18" type="craft_zone" x="64.3613" y="165.899" width="31.9172" height="29.3671"/>
+  <object id="19" type="collision" x="64.366" y="195.457" width="31.0035" height="27.7399"/>
+  <object id="20" type="craft_zone" x="128.727" y="166.081" width="31.0035" height="27.7399"/>
+  <object id="21" type="collision" x="128.909" y="187.653" width="31.0035" height="34.267"/>
+  <object id="22" type="craft_zone" x="97.2739" y="132.242" width="27.705" height="27.0732"/>
+  <object id="23" type="collision" x="99.169" y="158.281" width="25.0811" height="24.0676"/>
+  <object id="24" name="Air" type="zone_creation" x="231.92" y="313.298" width="47.6736" height="38.0575"/>
+  <object id="25" type="drop_zone" x="101.239" y="385.477" width="29.3717" height="26.6014"/>
+  <object id="26" type="drop_zone" x="127.277" y="385.911" width="30.8717" height="25.8514"/>
+  <object id="27" type="drop_zone" x="225.926" y="386.072" width="29.8717" height="25.4764"/>
+  <object id="28" type="drop_zone" x="256.048" y="385.786" width="29.8717" height="25.8514"/>
+  <object id="29" type="drop_zone" x="354.46" y="385.578" width="30.0384" height="25.8097"/>
+  <object id="30" type="drop_zone" x="384.096" y="385.286" width="29.6217" height="26.4764"/>
+  <object id="31" type="drop_zone" x="192.186" y="224.006" width="31.6217" height="28.6014"/>
+  <object id="32" type="drop_zone" x="224.065" y="223.999" width="31.9967" height="28.7264"/>
   <object id="33" type="potioncraft_zone" x="257.818" y="82.4039" width="29.3717" height="57.1116"/>
   <object id="34" type="potioncraft_zone" x="419.363" y="82.4039" width="29.3717" height="57.1116"/>
   <object id="35" type="potioncraft_zone" x="336.143" y="84.0357" width="29.3717" height="24.4764"/>
-  <object id="36" name="Feu" type="zone_creation" x="122.382" y="57.1116" width="44.0575" height="44.0575"/>
-  <object id="38" x="32.6352" y="383.464" width="27.7399" height="31.0035"/>
+  <object id="36" name="Feu" type="zone_creation" x="122.382" y="57.1116" width="44.0575" height="38.7242"/>
+  <object id="38" type="collision" x="32.6352" y="383.464" width="31.2399" height="32.2535"/>
+  <object id="41" type="Spawn" x="220" y="148.333">
+   <point/>
+  </object>
+  <object id="42" type="ladder_spawn" x="87.3333" y="362">
+   <point/>
+  </object>
  </objectgroup>
 </map>
