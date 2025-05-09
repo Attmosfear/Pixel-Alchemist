@@ -1,0 +1,69 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Labo.tsx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "Cave.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "Labo.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "Map Laboratoire.tmx": {
+            "scale": 1.3253348214285714,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 256.16168421052635,
+                "y": 223.71705263157898
+            }
+        },
+        "Map Main Final.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 0.6128348214285714,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 748.1624476415955,
+                "y": 457.70897832817343
+            }
+        },
+        "Map cave.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 0.75,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 642,
+                "y": 378
+            }
+        }
+    },
+    "last.imagePath": "C:/Users/romai/PycharmProjects/Tile sett/craftpix-net-791281-medieval-interior-top-down-pixel-art-tileset/All Tileset",
+    "map.height": 14,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 16,
+    "openFiles": [
+        "Map cave.tmx",
+        "Map Laboratoire.tmx",
+        "Cave.tsx",
+        "Labo.tsx"
+    ],
+    "project": "Laboratoire Main 1.tiled-project",
+    "recentFiles": [
+        "Map cave.tmx",
+        "Map Laboratoire.tmx",
+        "Cave.tsx",
+        "Labo.tsx",
+        "Map Main Final.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx"
+}
