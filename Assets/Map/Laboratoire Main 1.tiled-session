@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Labo.tsx",
+    "activeFile": "Map Laboratoire.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -17,11 +17,14 @@
             "scaleInEditor": 1
         },
         "Map Laboratoire.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
             "scale": 1.3253348214285714,
-            "selectedLayer": 0,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 256.16168421052635,
-                "y": 223.71705263157898
+                "x": 151.65978947368424,
+                "y": 107.52000000000001
             }
         },
         "Map Main Final.tmx": {
@@ -42,15 +45,15 @@
             "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 642,
-                "y": 378
+                "x": 451.99999999999994,
+                "y": 48.66666666666666
             }
         }
     },
-    "last.imagePath": "C:/Users/romai/PycharmProjects/Tile sett/craftpix-net-791281-medieval-interior-top-down-pixel-art-tileset/All Tileset",
+    "last.imagePath": "C:/Users/romai/PycharmProjects/Tile sett/craftpix-net-316309-golem-character-sprite-sheets-pixel-art/Lava_golem",
     "map.height": 14,
     "map.lastUsedFormat": "tmx",
-    "map.width": 16,
+    "map.width": 24,
     "openFiles": [
         "Map cave.tmx",
         "Map Laboratoire.tmx",
@@ -60,9 +63,9 @@
     "project": "Laboratoire Main 1.tiled-project",
     "recentFiles": [
         "Map cave.tmx",
-        "Map Laboratoire.tmx",
-        "Cave.tsx",
         "Labo.tsx",
+        "Cave.tsx",
+        "Map Laboratoire.tmx",
         "Map Main Final.tmx"
     ],
     "tileset.lastUsedFormat": "tsx"
