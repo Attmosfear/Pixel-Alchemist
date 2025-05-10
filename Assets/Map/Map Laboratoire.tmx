@@ -110,25 +110,25 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="7" name="Zone" visible="0">
-  <object id="1" x="94.6421" y="35.8987" width="96.2739" height="63.6387"/>
-  <object id="2" x="34.267" y="4.89528" width="58.7434" height="88.1151"/>
-  <object id="3" x="-1.63176" y="-3.26352" width="510.741" height="34.267"/>
-  <object id="4" x="483.001" y="-1.63176" width="32.6352" height="448.734"/>
-  <object id="5" x="3.26352" y="419.363" width="514.005" height="27.7399"/>
-  <object id="6" x="0" y="3.55271e-15" width="31.0035" height="442.207"/>
-  <object id="7" x="22.8447" y="252.923" width="71.7975" height="63.6387"/>
+ <objectgroup id="7" name="Zone">
+  <object id="1" type="collision" x="94.6421" y="35.8987" width="96.2739" height="63.6387"/>
+  <object id="2" type="collision" x="34.267" y="4.89528" width="58.7434" height="88.1151"/>
+  <object id="3" type="collision" x="-1.63176" y="-3.26352" width="510.741" height="34.267"/>
+  <object id="4" type="collision" x="483.001" y="-1.63176" width="32.6352" height="448.734"/>
+  <object id="5" type="collision" x="3.26352" y="419.363" width="514.005" height="27.7399"/>
+  <object id="6" type="collision" x="0" y="3.55271e-15" width="31.0035" height="442.207"/>
+  <object id="7" type="collision" x="22.8447" y="252.923" width="71.7975" height="63.6387"/>
   <object id="8" type="trap_zone" x="35.8987" y="313.298" width="29.3717" height="40.794"/>
-  <object id="9" x="127.277" y="252.923" width="254.555" height="66.9022"/>
-  <object id="10" x="414.467" y="256.186" width="68.534" height="65.2704"/>
-  <object id="11" x="443.839" y="308.403" width="39.1623" height="102.801"/>
-  <object id="15" x="256.186" y="68.534" width="62.0069" height="117.487"/>
-  <object id="16" x="386.727" y="65.2704" width="58.7434" height="122.382"/>
-  <object id="17" x="329.616" y="91.3786" width="47.3211" height="73.4292"/>
+  <object id="9" type="collision" x="127.277" y="252.923" width="254.555" height="66.9022"/>
+  <object id="10" type="collision" x="414.467" y="256.186" width="68.534" height="65.2704"/>
+  <object id="11" type="collision" x="443.839" y="308.403" width="39.1623" height="102.801"/>
+  <object id="15" type="collision" x="256.186" y="68.534" width="62.0069" height="117.487"/>
+  <object id="16" type="collision" x="386.727" y="65.2704" width="58.7434" height="122.382"/>
+  <object id="17" type="collision" x="329.616" y="91.3786" width="47.3211" height="73.4292"/>
   <object id="18" type="craft_zone" x="65.2704" y="164.808" width="29.3717" height="31.0035"/>
-  <object id="19" x="63.6387" y="192.548" width="31.0035" height="27.7399"/>
+  <object id="19" type="collision" x="63.6387" y="192.548" width="31.0035" height="27.7399"/>
   <object id="20" type="craft_zone" x="128.909" y="164.808" width="31.0035" height="27.7399"/>
-  <object id="21" x="128.909" y="187.653" width="31.0035" height="34.267"/>
+  <object id="21" type="collision" x="128.909" y="187.653" width="31.0035" height="34.267"/>
   <object id="22" type="craft_zone" x="96.2739" y="128.909" width="29.3717" height="27.7399"/>
   <object id="23" x="101.169" y="158.281" width="19.5811" height="16.3176"/>
   <object id="24" name="Air" type="zone_creation" x="221.92" y="313.298" width="62.0069" height="44.0575"/>
@@ -144,6 +144,6 @@
   <object id="34" type="potioncraft_zone" x="419.363" y="82.4039" width="29.3717" height="57.1116"/>
   <object id="35" type="potioncraft_zone" x="336.143" y="84.0357" width="29.3717" height="24.4764"/>
   <object id="36" name="Feu" type="zone_creation" x="122.382" y="57.1116" width="44.0575" height="44.0575"/>
-  <object id="38" x="32.6352" y="383.464" width="27.7399" height="31.0035"/>
+  <object id="38" type="collision" x="32.6352" y="383.464" width="27.7399" height="31.0035"/>
  </objectgroup>
 </map>

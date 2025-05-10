@@ -50,8 +50,8 @@
             "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 372,
-                "y": 222.66666666666663
+                "x": 384,
+                "y": 224
             }
         },
         "Map Laboratoire.tmx": {
@@ -61,8 +61,8 @@
             "scale": 0.75,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 365.33333333333337,
-                "y": 216
+                "x": 364,
+                "y": 214.66666666666663
             }
         },
         "Map Main Final.tmx": {
@@ -83,8 +83,8 @@
             "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 232,
-                "y": 240
+                "x": 230.66666666666669,
+                "y": 238.66666666666663
             }
         },
         "Maptest.tmx": {
