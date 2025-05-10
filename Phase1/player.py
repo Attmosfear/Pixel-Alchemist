@@ -4,6 +4,9 @@ import pygame
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
+        # Définir une propriété _layer élevée pour que le joueur soit dessiné par-dessus les autres sprites
+        self._layer = 10
+
         self.sprite_sheet = pygame.image.load('Assets/Art/player.png').convert()
         self.image = self.get_image(0, 0)
         self.rect = self.image.get_rect()
@@ -13,6 +16,10 @@ class Player(pygame.sprite.Sprite):
         self.feet = pygame.Rect(0, 0, self.rect.width * 0.5, 12)
         self.old_position = self.position.copy()
         self.direction = 'DOWN'
+
+        # Ajuster la position des "pieds" du joueur
+        self.feet.centerx = self.rect.centerx
+        self.feet.bottom = self.rect.bottom
 
         # Inventaire du joueur
         self.held_item = None  # L'élément, potion ou pierre actuellement tenu
@@ -26,6 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.score = 0
 
     def save_location(self):
+        """Sauvegarde la position actuelle pour pouvoir revenir en arrière si collision"""
         self.old_position = self.position.copy()
 
     def get_image(self, x, y):
@@ -39,20 +47,21 @@ class Player(pygame.sprite.Sprite):
         image.blit(self.sprite_sheet, (0, 0), (x, y, 16, 16))
         return image
 
-    def move(self):
-        """
-        Modifie la position du joueur sur la carte
-        :return: Aucun car modification dynamique
-        """
-        self.position[0] += self.velocity[0] * self.speed
-        self.position[1] += self.velocity[1] * self.speed
+    # Nous n'utilisons plus cette méthode car le déplacement est géré dans Game.update()
+    # def move(self):
+    #     """
+    #     Modifie la position du joueur sur la carte
+    #     :return: Aucun car modification dynamique
+    #     """
+    #     self.position[0] += self.velocity[0] * self.speed
+    #     self.position[1] += self.velocity[1] * self.speed
 
     def move_back(self):
         """
-        Sauvegarde la position du joueur pour qu'en cas de collision celui ci s'arrete
+        Restaure la position précédente du joueur en cas de collision
         :return: Modification dynamique
         """
-        self.position = self.old_position
+        self.position = self.old_position.copy()
         self.rect.topleft = self.position
         self.feet.midbottom = self.rect.midbottom
 
@@ -71,9 +80,30 @@ class Player(pygame.sprite.Sprite):
         print(f"Objet récupéré: {item}")
         self.held_item = item
         item.held_by_player = True
+
+        # Mettre à jour immédiatement la position de l'objet
+        # pour qu'il apparaisse au bon endroit dès la prise
+        offset_x, offset_y = 0, 0
+        if self.direction == "UP":
+            offset_y = -20
+        elif self.direction == "DOWN":
+            offset_y = 20
+        elif self.direction == "LEFT":
+            offset_x = -20
+        elif self.direction == "RIGHT":
+            offset_x = 20
+
+        item.rect.centerx = self.rect.centerx + offset_x
+        item.rect.centery = self.rect.centery + offset_y
+
         return True
 
     def drop_element(self, zone):
+        """
+        Permet au joueur de déposer un objet dans une zone
+        :param zone: La zone où déposer l'objet
+        :return: True si réussi, False sinon
+        """
         if self.held_item:
             # Vérifier si la zone est déjà occupée
             if zone.have_object:
@@ -81,7 +111,10 @@ class Player(pygame.sprite.Sprite):
                 return False
 
             self.held_item.held_by_player = False
+
+            # Positionner l'objet au centre de la zone
             self.held_item.rect.center = zone.rect.center
+
             item = self.held_item
             self.held_item = None
 
@@ -138,5 +171,12 @@ class Player(pygame.sprite.Sprite):
         self.score += 50 * self.level  # Score basé sur le niveau actuel
 
     def update(self):
+        """
+        Met à jour les propriétés du joueur
+        """
+        # Mettre à jour la position du rectangle du joueur
         self.rect.topleft = self.position
-        self.feet.midbottom = self.rect.midbottom
+
+        # Mettre à jour la position des pieds du joueur
+        self.feet.centerx = self.rect.centerx
+        self.feet.bottom = self.rect.bottom

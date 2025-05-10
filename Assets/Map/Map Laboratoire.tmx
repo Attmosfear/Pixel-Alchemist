@@ -129,7 +129,7 @@
   <object id="19" type="collision" x="64.366" y="195.457" width="31.0035" height="27.7399"/>
   <object id="20" type="craft_zone" x="128.727" y="166.081" width="31.0035" height="27.7399"/>
   <object id="21" type="collision" x="128.909" y="187.653" width="31.0035" height="34.267"/>
-  <object id="22" type="craft_zone" x="97.2739" y="132.242" width="27.705" height="27.0732"/>
+  <object id="22" type="end_craft_zone" x="97.2739" y="132.242" width="27.705" height="27.0732"/>
   <object id="23" type="collision" x="99.169" y="158.281" width="25.0811" height="24.0676"/>
   <object id="24" name="Air" type="zone_creation" x="231.92" y="313.298" width="47.6736" height="38.0575"/>
   <object id="25" type="drop_zone" x="101.239" y="385.477" width="29.3717" height="26.6014"/>
@@ -148,7 +148,7 @@
   <object id="41" type="Spawn" x="220" y="148.333">
    <point/>
   </object>
-  <object id="42" type="ladder_spawn" x="87.3333" y="362">
+  <object id="42" type="ladder_spawn" x="96.3333" y="356.667">
    <point/>
   </object>
  </objectgroup>

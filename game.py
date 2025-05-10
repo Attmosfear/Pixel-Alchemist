@@ -37,6 +37,8 @@ class Game:
         self.ui = UIManager(self.screen_width, self.screen_height)
         self.animation_manager = AnimationManager()
 
+        self.debug_collision = False  # Option pour afficher les zones de collision
+
         # Initialisation du gestionnaire de crafting automatique
         self.auto_craft_manager = AutoCraftManager(self)
 
@@ -70,9 +72,10 @@ class Game:
         self.setup_active_map()
 
         # Groupes pour les sprites
-        self.elements = pygame.sprite.Group()
-        self.potions = pygame.sprite.Group()
-        self.enhancement_stones = pygame.sprite.Group()
+        # Utiliser LayeredUpdates pour permettre un contrôle précis de l'ordre de dessin
+        self.elements = pygame.sprite.LayeredUpdates()
+        self.potions = pygame.sprite.LayeredUpdates()
+        self.enhancement_stones = pygame.sprite.LayeredUpdates()
 
         # État des zones de crafting de potions
         self.potion_craft_state = {
@@ -104,6 +107,24 @@ class Game:
 
     def detect_spawn_points(self):
         """Détecte les points de spawn dans les cartes TMX"""
+        # Définir des valeurs par défaut pour tous les points de spawn
+        # Cela garantit qu'ils existent même si rien n'est trouvé dans les cartes
+        self.spawn_points = {
+            "laboratoire": {
+                "default": (220, 350),
+                "from_trap": None,
+                "from_ladder": (220, 350)
+            },
+            "cave": {
+                "default": (129, 112),
+                "from_trap": (129, 112),
+                "from_ladder": None
+            }
+        }
+
+        print("Points de spawn par défaut:", self.spawn_points)
+
+        # Maintenant, cherchons les points définis dans les cartes pour remplacer les valeurs par défaut
         for map_name, map_data in self.maps.items():
             tmx_data = map_data["tmx_data"]
 
@@ -112,11 +133,23 @@ class Game:
                 # Si c'est un point de spawn
                 if obj.type == "Spawn":
                     self.spawn_points[map_name]["default"] = (obj.x, obj.y)
+                    print(f"Point de spawn par défaut trouvé pour {map_name}: ({obj.x}, {obj.y})")
                 elif obj.type == "trap_spawn":
-                    self.spawn_points[map_name]["from_trap"] = (obj.x, obj.y)
+                    self.spawn_points["cave"]["from_trap"] = (obj.x, obj.y)
+                    print(f"Point de spawn après trappe trouvé: ({obj.x}, {obj.y})")
                 elif obj.type == "ladder_spawn":
-                    self.spawn_points[map_name]["from_ladder"] = (obj.x, obj.y)
+                    self.spawn_points["laboratoire"]["from_ladder"] = (obj.x, obj.y)
+                    print(f"Point de spawn après échelle trouvé: ({obj.x}, {obj.y})")
 
+        # Positionner le joueur au point de spawn par défaut de la carte initiale
+        spawn = self.spawn_points[self.current_map_name]["default"]
+        self.player.position[0] = spawn[0]
+        self.player.position[1] = spawn[1]
+        self.player.rect.topleft = self.player.position
+        self.player.feet.midbottom = self.player.rect.midbottom
+
+
+        print(f"Points de spawn finaux: {self.spawn_points}")
         # Définir des valeurs par défaut au cas où certains points ne sont pas trouvés
         if "default" not in self.spawn_points["laboratoire"]:
             self.spawn_points["laboratoire"]["default"] = (220, 350)
@@ -139,9 +172,10 @@ class Game:
         tmx_data = pytmx.util_pygame.load_pygame(map_path)
         map_data = pyscroll.data.TiledMapData(tmx_data)
 
-        # Utilisons directement la taille de l'écran pour le renderer au lieu du scaling
+        # Utilisons directement la taille de l'écran pour le renderer sans zoom
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, (self.screen_width, self.screen_height))
-        map_layer.zoom = 2.0  # Ajuster le zoom directement via pyscroll
+        # Aucun zoom appliqué - rester à l'échelle 1.0
+        map_layer.zoom = 1.0
 
         # Groupes pour les sprites de la carte
         group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
@@ -153,6 +187,7 @@ class Game:
         potioncraft_zones = []
         creation_zones = []
         trap_zones = []  # Nouvelles zones pour les pièges/trappes
+        end_craft_zones = []  # Zones pour les résultats de craft
 
         for obj in tmx_data.objects:
             if obj.type == "collision":
@@ -160,6 +195,9 @@ class Game:
             if obj.type == "craft_zone":
                 walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
                 craft_zones.append(Zone(obj.x, obj.y, obj.id, obj.type))
+            if obj.type == "end_craft_zone":  # Nouvelle zone pour le résultat du craft
+                walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                end_craft_zones.append(Zone(obj.x, obj.y, obj.id, obj.type))
             if obj.type == "drop_zone":
                 walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
                 drop_zones.append(Zone(obj.x, obj.y, obj.id, obj.type))
@@ -177,14 +215,14 @@ class Game:
                 trap_zone = Zone(obj.x, obj.y, obj.id, obj.type)
                 trap_zones.append(trap_zone)
 
-        # Ajout des bords de l'écran comme des collisions (ajusté pour la taille réelle)
+        # Ajout des bords de l'écran comme des collisions
         walls.append(pygame.Rect(-5, 0, 5, self.screen_height))
         walls.append(pygame.Rect(self.screen_width, 0, 5, self.screen_height))
         walls.append(pygame.Rect(0, -5, self.screen_width, 5))
         walls.append(pygame.Rect(0, self.screen_height, self.screen_width, 5))
 
         # Regrouper toutes les zones pour la détection
-        zones = craft_zones + drop_zones + potioncraft_zones + creation_zones + trap_zones
+        zones = craft_zones + drop_zones + potioncraft_zones + creation_zones + trap_zones + end_craft_zones
 
         # Stocker toutes les informations de la carte
         self.maps[map_name] = {
@@ -195,6 +233,7 @@ class Game:
             "walls": walls,
             "zones": zones,
             "craft_zones": craft_zones,
+            "end_craft_zones": end_craft_zones,  # Nouvelle propriété
             "drop_zones": drop_zones,
             "potioncraft_zones": potioncraft_zones,
             "creation_zones": creation_zones,
@@ -209,6 +248,7 @@ class Game:
         self.walls = current_map["walls"]
         self.zones = current_map["zones"]
         self.craft_zones = current_map["craft_zones"]
+        self.end_craft_zones = current_map["end_craft_zones"]  # Nouvelle propriété
         self.drop_zones = current_map["drop_zones"]
         self.potioncraft_zones = current_map["potioncraft_zones"]
         self.creation_zones = current_map["creation_zones"]
@@ -216,7 +256,6 @@ class Game:
 
         # Configurer le groupe de dessin
         self.group = current_map["group"]
-        self.group.add(self.player)
 
     def change_map(self, target_map, transition_type):
         """Change la carte active et place le joueur au bon endroit"""
@@ -242,13 +281,16 @@ class Game:
         # Déplacer le joueur au bon point de spawn en fonction du type de transition
         if self.transition_type == "trap":
             # Du laboratoire vers la cave via la trappe
-            spawn = self.spawn_points["cave"].get("from_trap", self.spawn_points["cave"]["default"])
+            spawn = self.spawn_points["cave"]["from_trap"]
+            print(f"Téléportation vers la cave via trappe: {spawn}")
         elif self.transition_type == "ladder":
             # De la cave vers le laboratoire via l'échelle
-            spawn = self.spawn_points["laboratoire"].get("from_ladder", self.spawn_points["laboratoire"]["default"])
+            spawn = self.spawn_points["laboratoire"]["from_ladder"]
+            print(f"Téléportation vers le laboratoire via échelle: {spawn}")
         else:
             # Point de spawn par défaut
             spawn = self.spawn_points[self.current_map_name]["default"]
+            print(f"Téléportation vers le point par défaut: {spawn}")
 
         self.player.position[0] = spawn[0]
         self.player.position[1] = spawn[1]
@@ -314,24 +356,28 @@ class Game:
                                             self.ui.show_message(f"Élément {obj.name} récupéré !")
                             continue
 
-                        # Si on est devant la zone de résultat et qu'on a un élément placé
-                        if front_zone.type == "potioncraft_zone" and front_zone.id == 37:
-                            if self.potion_craft_state["element"] is not None and not self.crafting_in_progress:
-                                # Commencer le crafting
-                                self.crafting_in_progress = True
-                                self.crafting_timer = 0
-
-                                # Démarrer l'animation
-                                mixing_anim = PotionMixingAnimation(duration=self.crafting_time_required)
-                                self.animation_manager.add_animation(
-                                    "potion_mixing",
-                                    mixing_anim,
-                                    front_zone.rect.center
-                                )
-                                self.ui.show_message("Mélange en cours... Maintenez E", 2.0)
-                                # Important : sortir du bloc après avoir commencé le crafting
-                                # pour éviter d'exécuter le code de dépôt/récupération
-                                continue
+                        elif front_zone.type == "end_craft_zone":
+                            # Si on tient un objet, on ne peut pas le déposer dans la zone de résultat
+                            if self.player.held_item:
+                                self.ui.show_message("Vous ne pouvez pas déposer d'objets dans la zone de résultat!",
+                                                     1.0)
+                            else:
+                                # On vérifie s'il y a un objet à récupérer
+                                game_objects = {
+                                    'elements': self.elements,
+                                    'potions': self.potions,
+                                    'stones': self.enhancement_stones
+                                }
+                                obj = get_element_on_tile(front_zone, game_objects, None)
+                                if obj:
+                                    success = self.player.pick_element(obj)
+                                    if success:
+                                        front_zone.have_object = False
+                                        if isinstance(obj, Element):
+                                            msg = f"Élément {obj.name} récupéré de la zone de résultat!"
+                                        else:
+                                            msg = "Objet récupéré de la zone de résultat!"
+                                        self.ui.show_message(msg)
 
                         # Si on tient un objet, essayer de le déposer
                         if self.player.held_item:
@@ -356,6 +402,26 @@ class Game:
                                 success = self.player.drop_element(front_zone)
                                 if success:
                                     self.ui.show_message(f"Objet déposé")
+
+                            # Si on est devant la zone de résultat et qu'on a un élément placé
+                            if front_zone.type == "potioncraft_zone" and front_zone.id == 37:
+                                if self.potion_craft_state["element"] is not None and not self.crafting_in_progress:
+                                    # Commencer le crafting
+                                    self.crafting_in_progress = True
+                                    self.crafting_timer = 0
+
+                                    # Démarrer l'animation
+                                    mixing_anim = PotionMixingAnimation(duration=self.crafting_time_required)
+                                    self.animation_manager.add_animation(
+                                        "potion_mixing",
+                                        mixing_anim,
+                                        front_zone.rect.center
+                                    )
+                                    self.ui.show_message("Mélange en cours... Maintenez E", 2.0)
+                                    # Important : sortir du bloc après avoir commencé le crafting
+                                    # pour éviter d'exécuter le code de dépôt/récupération
+                                    continue
+
                         else:
                             # On ne tient pas d'objet, essayer d'en ramasser un
                             game_objects = {
@@ -380,6 +446,14 @@ class Game:
 
                                     self.ui.show_message(msg)
 
+                elif event.key == pygame.K_F1:
+                    # Touche F1 pour activer/désactiver le débogage des collisions
+                    self.debug_collision = not self.debug_collision
+                    if self.debug_collision:
+                        self.ui.show_message("Débogage des collisions activé", 2.0)
+                    else:
+                        self.ui.show_message("Débogage des collisions désactivé", 2.0)
+
                 elif event.key == pygame.K_h:
                     # Touche pour afficher/masquer l'aide
                     self.show_help = not self.show_help
@@ -390,6 +464,8 @@ class Game:
                         self.show_help = False
                     else:
                         self.running = False
+
+
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_e and self.crafting_in_progress:
@@ -501,26 +577,86 @@ class Game:
                 self.phase_timer = 120
                 self.phase = 1  # On reste en phase 1 pour le moment
 
-        # Déplacement du joueur
-        self.player.move()
+        # Vérifier les touches pressées et mettre à jour la direction du joueur
+        keys = pygame.key.get_pressed()
+        if not self.transition_in_progress:
+            if keys[pygame.K_LEFT]:
+                self.player.velocity[0] = -1
+                self.player.direction = 'LEFT'
+            elif keys[pygame.K_RIGHT]:
+                self.player.velocity[0] = 1
+                self.player.direction = 'RIGHT'
+            else:
+                self.player.velocity[0] = 0
+
+            if keys[pygame.K_UP]:
+                self.player.velocity[1] = -1
+                self.player.direction = 'UP'
+            elif keys[pygame.K_DOWN]:
+                self.player.velocity[1] = 1
+                self.player.direction = 'DOWN'
+            else:
+                self.player.velocity[1] = 0
+
+        # Sauvegarder la position actuelle du joueur
+        self.player.save_location()
+
+        # NOUVELLE APPROCHE DE COLLISION: traiter séparément les déplacements et vérifier les collisions à chaque étape
+
+        # Déplacement horizontal
+        if self.player.velocity[0] != 0:
+            # Calculer la nouvelle position horizontale
+            new_x = self.player.position[0] + self.player.velocity[0] * self.player.speed
+
+            # Mettre à jour temporairement la position horizontale
+            old_x = self.player.position[0]
+            self.player.position[0] = new_x
+            self.player.rect.topleft = self.player.position
+            self.player.feet.midbottom = self.player.rect.midbottom
+
+            # Vérifier les collisions
+            collision = False
+            for wall in self.walls:
+                if self.player.feet.colliderect(wall):
+                    collision = True
+                    break
+
+            # Si collision, revenir à l'ancienne position horizontale
+            if collision:
+                self.player.position[0] = old_x
+                self.player.rect.topleft = self.player.position
+                self.player.feet.midbottom = self.player.rect.midbottom
+
+        # Déplacement vertical (même principe)
+        if self.player.velocity[1] != 0:
+            # Calculer la nouvelle position verticale
+            new_y = self.player.position[1] + self.player.velocity[1] * self.player.speed
+
+            # Mettre à jour temporairement la position verticale
+            old_y = self.player.position[1]
+            self.player.position[1] = new_y
+            self.player.rect.topleft = self.player.position
+            self.player.feet.midbottom = self.player.rect.midbottom
+
+            # Vérifier les collisions
+            collision = False
+            for wall in self.walls:
+                if self.player.feet.colliderect(wall):
+                    collision = True
+                    break
+
+            # Si collision, revenir à l'ancienne position verticale
+            if collision:
+                self.player.position[1] = old_y
+                self.player.rect.topleft = self.player.position
+                self.player.feet.midbottom = self.player.rect.midbottom
+
+        # Finaliser la mise à jour du joueur
         self.player.update()
 
-        # Verification de collision
-        for sprite in self.group.sprites():
-            if sprite.feet.collidelist(self.walls) > -1:
-                sprite.move_back()
-
-        # Gestion des blocs en mouvement
-        for element in self.elements:
-            element.update_position(self.player)
-
-        # Gestion des potions en mouvement
-        for potion in self.potions:
-            potion.update_position(self.player)
-
-        # Gestion des pierres en mouvement
-        for stone in self.enhancement_stones:
-            stone.update_position(self.player)
+        # Mettre à jour les éléments transportés
+        if self.player.held_item:
+            self.player.held_item.update_position(self.player)
 
         # Vérifier si le joueur est sur une zone de transition (seulement si pas en cooldown)
         if not self.just_teleported:
@@ -537,61 +673,103 @@ class Game:
 
         # Gestion des crafts d'éléments
         elements_craft = pygame.sprite.Group()
+        craft_zones_used = []
+
         for zone in self.craft_zones:
-            # Utiliser la version non-modifiée de get_element_on_tile pour les crafts d'éléments
-            # car elle est spécifique à ce processus
             crafting_element = get_element_on_tile(zone, {'elements': self.elements}, None)
             if crafting_element:
                 elements_craft.add(crafting_element)
+                craft_zones_used.append(zone)
 
         recipe = check_block_craft(elements_craft, self.recipes_data)
 
-        if recipe and len(elements_craft) >= 2:  # Au moins 2 éléments pour un craft
-            print(f"Craft réussi : {recipe['result_name']}")
-            for el in elements_craft:
-                self.elements.remove(el)
+        # S'il y a exactement 2 éléments et que la zone de résultat est libre
+        if len(elements_craft) == 2 and (
+                not self.end_craft_zones or not any(zone.have_object for zone in self.end_craft_zones)):
+            recipe = check_block_craft(elements_craft, self.recipes_data)
 
-            result_data = next(e for e in self.elements_data if e["id"] == recipe['result'])
+            if recipe:
+                print(f"Craft réussi : {recipe['result_name']}")
 
-            position_crafted_element = self.craft_zones[0].rect
-            new_element = Element(position_crafted_element.centerx, position_crafted_element.centery, result_data)
-            self.elements.add(new_element)
+                # Supprimer les éléments utilisés
+                for el in elements_craft:
+                    self.elements.remove(el)
 
-            # Donner de l'XP pour le craft d'élément
-            self.player.gain_experience(5)
-            self.ui.show_message(f"Élément {recipe['result_name']} créé !")
+                # Libérer les zones de craft
+                for zone in craft_zones_used:
+                    zone.have_object = False
+
+                # Trouver les données de l'élément résultant
+                result_data = next(e for e in self.elements_data if e["id"] == recipe['result'])
+
+                # Placer le nouvel élément dans la zone de résultat si elle existe
+                if self.end_craft_zones:
+                    result_zone = self.end_craft_zones[0]
+                    new_element = Element(result_zone.rect.centerx, result_zone.rect.centery, result_data)
+                    result_zone.have_object = True
+                else:
+                    # Fallback: utiliser le centre des zones de craft
+                    center_x = sum(zone.rect.centerx for zone in craft_zones_used) // len(craft_zones_used)
+                    center_y = sum(zone.rect.centery for zone in craft_zones_used) // len(craft_zones_used)
+                    new_element = Element(center_x, center_y, result_data)
+
+                self.elements.add(new_element)
+
+                # Donner de l'XP pour le craft d'élément
+                self.player.gain_experience(5)
+                self.ui.show_message(f"Élément {recipe['result_name']} créé !")
 
     def display(self):
-        # Dessiner le jeu de base sur l'écran directement (sans scaling)
+        # Effacer l'écran
         self.screen.fill((100, 100, 100))
 
-        # Ne mettre à jour et dessiner que si on n'est pas en transition
-        if not self.transition_in_progress:
-            self.group.update()
-            self.group.center(self.player.rect.center)
-            self.group.draw(self.screen)
-
-            # Dessiner tous les éléments de jeu
-            self.elements.draw(self.screen)
-            self.potions.draw(self.screen)
-            self.enhancement_stones.draw(self.screen)
-
-            # Dessiner les animations
-            self.animation_manager.draw(self.screen)
-        else:
-            # Dessiner l'animation de transition
-            progress = self.transition_timer / 1.0  # Durée totale de transition: 1 seconde
+        # Si nous sommes en transition, afficher uniquement l'animation de transition
+        if self.transition_in_progress:
+            progress = self.transition_timer / 1.0
             fade_value = int(255 * progress)
             fade_surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
-            fade_surface.fill((0, 0, 0, fade_value))  # Noir avec alpha progressif
+            fade_surface.fill((0, 0, 0, fade_value))
             self.screen.blit(fade_surface, (0, 0))
+
+            # Afficher uniquement l'interface utilisateur pendant la transition
+            self.ui.draw_temp_messages(self.screen)
+            pygame.display.flip()
+            return
+
+        # Centrer la carte sur le joueur
+        self.group.center(self.player.rect.center)
+
+        # Dessiner la carte (sans le joueur pour l'instant)
+        self.group.draw(self.screen)
+
+        # Dessiner les éléments qui ne sont pas tenus par le joueur
+        for element in self.elements:
+            if not element.held_by_player:
+                self.screen.blit(element.image, element.rect)
+
+        for potion in self.potions:
+            if not potion.held_by_player:
+                self.screen.blit(potion.image, potion.rect)
+
+        for stone in self.enhancement_stones:
+            if not stone.held_by_player:
+                self.screen.blit(stone.image, stone.rect)
+
+        # Dessiner le joueur par-dessus les éléments au sol
+        self.screen.blit(self.player.image, self.player.rect)
+
+        # Dessiner les éléments tenus par le joueur par-dessus tout le reste
+        if self.player.held_item:
+            self.screen.blit(self.player.held_item.image, self.player.held_item.rect)
+
+        # Dessiner les animations
+        self.animation_manager.draw(self.screen)
 
         # Dessiner l'interface utilisateur
         self.ui.draw_player_info(self.screen, self.player)
 
-        # Afficher les infobulles si la souris est sur un objet
+        # Afficher les infobulles
         mouse_pos = pygame.mouse.get_pos()
-        # Utiliser directement les coordonnées de la souris, sans scaling
         self.ui.draw_tooltip(self.screen, mouse_pos, self.elements, self.potions, self.enhancement_stones)
 
         # Afficher les messages temporaires
@@ -605,15 +783,26 @@ class Game:
         timer_surface = timer_font.render(timer_text, True, (255, 255, 255))
         self.screen.blit(timer_surface, (self.screen_width - timer_surface.get_width() - 10, 10))
 
-        # Afficher la carte actuelle
+        # Afficher le nom de la carte actuelle
         map_text = f"Carte: {self.current_map_name.capitalize()}"
         map_surface = timer_font.render(map_text, True, (255, 255, 255))
         self.screen.blit(map_surface, (10, self.screen_height - map_surface.get_height() - 10))
+
+        # DEBUG: Afficher la position du joueur et des éléments transportés
+        if self.player.held_item and self.debug_collision:
+            debug_text = f"Joueur: {self.player.rect.center}, Item: {self.player.held_item.rect.center}"
+            debug_surface = timer_font.render(debug_text, True, (255, 255, 0))
+            self.screen.blit(debug_surface, (10, 40))
 
         # Afficher l'aide si demandé
         if self.show_help:
             self.draw_help()
 
+        # Afficher les zones de collision si l'option de débogage est activée
+        if self.debug_collision:
+            self.draw_collision_debug()
+
+        # Mettre à jour l'affichage
         pygame.display.flip()
 
     def place_in_potion_craft_zone(self, zone):
@@ -791,6 +980,48 @@ class Game:
         help_surface.blit(close_text, (self.screen_width // 2 - close_text.get_width() // 2, self.screen_height - 50))
 
         self.screen.blit(help_surface, (0, 0))
+
+    def update_carried_items(self):
+        """Met à jour la position des éléments transportés par le joueur"""
+        if self.player.held_item:
+            self.player.held_item.update_position(self.player)
+
+    def draw_collision_debug(self):
+        """Dessine les zones de collision pour le débogage"""
+        # Dessiner les murs
+        for wall in self.walls:
+            pygame.draw.rect(self.screen, (255, 0, 0, 128), wall, 2)
+
+        # Dessiner les pieds du joueur
+        pygame.draw.rect(self.screen, (0, 255, 0, 128), self.player.feet, 2)
+
+        # Dessiner les différentes zones
+        for zone in self.zones:
+            if zone.type == "craft_zone":
+                color = (0, 0, 255, 128)  # Bleu pour les zones de craft
+            elif zone.type == "end_craft_zone":
+                color = (255, 165, 0, 128)  # Orange pour les zones de résultat de craft
+            elif zone.type == "drop_zone":
+                color = (255, 255, 0, 128)  # Jaune pour les zones de dépôt
+            elif zone.type == "potioncraft_zone":
+                color = (255, 0, 255, 128)  # Magenta pour les zones de craft de potions
+            elif zone.type == "zone_creation":
+                color = (0, 255, 255, 128)  # Cyan pour les zones de création
+            elif zone.type in ["trap_zone", "ladder_zone"]:
+                color = (255, 128, 0, 128)  # Orange pour les zones de transition
+            else:
+                color = (128, 128, 128, 128)  # Gris pour les autres zones
+
+            pygame.draw.rect(self.screen, color, zone.rect, 2)
+
+            # Afficher l'ID et l'état d'occupation
+            if self.debug_collision:
+                font = pygame.font.SysFont('Arial', 10)
+                text = f"{zone.id}"
+                if hasattr(zone, "have_object") and zone.have_object:
+                    text += " ✓"
+                text_surface = font.render(text, True, (255, 255, 255))
+                self.screen.blit(text_surface, (zone.rect.x + 2, zone.rect.y + 2))
 
     def run(self):
         while self.running:

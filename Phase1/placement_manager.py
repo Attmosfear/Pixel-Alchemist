@@ -17,7 +17,7 @@ def get_front_tile(player, zones):
     """
     # Ajustement des distances pour mieux détecter les zones
     player_position = player.rect.center
-    offset = 40  # Distance de détection ajustée
+    offset = 25  # Distance de détection réduite
 
     if player.direction == 'UP':
         front_tile_position = (player_position[0], player_position[1] - offset)
@@ -37,6 +37,7 @@ def get_front_tile(player, zones):
             return zone
 
     return None
+
 
 
 def get_element_on_tile(zone, game_objects, potion_craft_state=None):
