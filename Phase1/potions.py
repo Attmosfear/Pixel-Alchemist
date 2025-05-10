@@ -41,18 +41,22 @@ class Potion(pygame.sprite.Sprite):
         self.duration = 1  # Durée de base, peut être améliorée par des pierres
 
     def update_position(self, player):
-        """Met à jour la position de la potion quand elle est portée par le joueur"""
+        """Met à jour la position de l'élément quand il est porté par le joueur"""
         if self.held_by_player:
+            # Offsets adaptés pour l'affichage sans zoom
             offset_x, offset_y = 0, 0
+
+            # Positions relatives en fonction de la direction du joueur
             if player.direction == "UP":
-                offset_y = -15
+                offset_y = -20
             elif player.direction == "DOWN":
-                offset_y = 15
+                offset_y = 20
             elif player.direction == "LEFT":
                 offset_x = -20
             elif player.direction == "RIGHT":
                 offset_x = 20
 
+            # Positionner l'élément par rapport au centre du joueur
             self.rect.centerx = player.rect.centerx + offset_x
             self.rect.centery = player.rect.centery + offset_y
 

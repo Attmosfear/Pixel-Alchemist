@@ -64,18 +64,13 @@ class AutoCraftManager:
         if self.craft_in_progress:
             return False
 
-        # Pour une table 1x2, on doit avoir exactement 2 zones avec des éléments
-        if len(self.game.craft_zones) != 2:
-            print(f"DEBUG: Table de craft incorrecte - {len(self.game.craft_zones)} zones au lieu de 2")
-            return False
-
         # Collecter les éléments sur les zones de craft
         elements_on_craft = []
         zones_with_elements = []
 
-        # Vérifier les deux zones
+        # Vérifier les zones de craft
         for zone in self.game.craft_zones:
-            print(f"DEBUG: Vérification zone {zone.id}, occupée: {zone.have_object}")
+            print(f"DEBUG: Vérification zone craft {zone.id}, occupée: {zone.have_object}")
             if zone.have_object:
                 # Chercher l'élément sur cette zone
                 for element in self.game.elements:
@@ -90,40 +85,44 @@ class AutoCraftManager:
             print(
                 f"DEBUG: 2 éléments trouvés pour crafting: {elements_on_craft[0].name} et {elements_on_craft[1].name}")
 
-            # Calculer le centre entre les deux zones pour l'animation
-            craft_center_x = (zones_with_elements[0].rect.centerx + zones_with_elements[1].rect.centerx) // 2
-            craft_center_y = (zones_with_elements[0].rect.centery + zones_with_elements[1].rect.centery) // 2
+            # Calculer le centre pour l'animation (moyenne des positions des zones de craft)
+            craft_center_x = sum(zone.rect.centerx for zone in zones_with_elements) // len(zones_with_elements)
+            craft_center_y = sum(zone.rect.centery for zone in zones_with_elements) // len(zones_with_elements)
             self.craft_center = (craft_center_x, craft_center_y)
 
-            # Vérifier s'il existe une recette pour ces éléments
-            posed_ids = sorted([el.id for el in elements_on_craft])
+            # Vérifier si la zone de résultat est libre
+            if not self.game.end_craft_zones or not any(zone.have_object for zone in self.game.end_craft_zones):
+                # Vérifier s'il existe une recette pour ces éléments
+                posed_ids = sorted([el.id for el in elements_on_craft])
 
-            # Trouver une recette correspondante
-            self.matching_recipe = None  # Réinitialiser
-            for recipe in self.game.recipes_data:
-                if sorted(recipe["ingredients"]) == posed_ids:
-                    self.matching_recipe = recipe
-                    break
+                # Trouver une recette correspondante
+                self.matching_recipe = None  # Réinitialiser
+                for recipe in self.game.recipes_data:
+                    if sorted(recipe["ingredients"]) == posed_ids:
+                        self.matching_recipe = recipe
+                        break
 
-            if self.matching_recipe:
-                print("DEBUG: Recette trouvée pour auto-craft:", self.matching_recipe["result_name"])
-                self.craft_in_progress = True
-                self.craft_timer = 0
-                self.elements_to_craft = elements_on_craft
-                self.zones_with_elements = zones_with_elements
+                if self.matching_recipe:
+                    print("DEBUG: Recette trouvée pour auto-craft:", self.matching_recipe["result_name"])
+                    self.craft_in_progress = True
+                    self.craft_timer = 0
+                    self.elements_to_craft = elements_on_craft
+                    self.zones_with_elements = zones_with_elements
 
-                # Ajouter l'animation
-                craft_anim = CraftingAnimation(duration=self.craft_time_required)
-                self.game.animation_manager.add_animation(
-                    "element_crafting",
-                    craft_anim,
-                    self.craft_center
-                )
+                    # Ajouter l'animation
+                    craft_anim = CraftingAnimation(duration=self.craft_time_required)
+                    self.game.animation_manager.add_animation(
+                        "element_crafting",
+                        craft_anim,
+                        self.craft_center
+                    )
 
-                self.game.ui.show_message(f"Crafting {self.matching_recipe['result_name']} en cours...", 2.0)
-                return True
+                    self.game.ui.show_message(f"Crafting {self.matching_recipe['result_name']} en cours...", 2.0)
+                    return True
+                else:
+                    print("DEBUG: Pas de recette trouvée pour ces éléments")
             else:
-                print("DEBUG: Pas de recette trouvée pour ces éléments")
+                print("DEBUG: Zone de résultat occupée, impossible de crafter")
         else:
             print(f"DEBUG: Nombre d'éléments insuffisant pour crafting: {len(elements_on_craft)}")
 
@@ -155,7 +154,7 @@ class AutoCraftManager:
             self.game.elements.remove(element)
             print(f"DEBUG: Élément {element.name} consommé dans le crafting")
 
-        # Libérer les zones
+        # Libérer les zones de craft
         if hasattr(self, 'zones_with_elements'):
             for zone in self.zones_with_elements:
                 zone.have_object = False
@@ -164,20 +163,26 @@ class AutoCraftManager:
         # Trouver les données de l'élément résultant
         result_data = next(e for e in self.game.elements_data if e["id"] == self.matching_recipe['result'])
 
-        # Créer le nouvel élément au centre calculé
-        if self.craft_center:
+        # Créer le nouvel élément dans la zone de résultat si elle existe
+        result_zone = None
+        if self.game.end_craft_zones:
+            result_zone = self.game.end_craft_zones[0]  # Utiliser la première zone de résultat
+
+        if result_zone:
+            # Placer le résultat dans la zone prévue
+            new_element = Element(result_zone.rect.centerx, result_zone.rect.centery, result_data)
+            result_zone.have_object = True
+            print(f"DEBUG: Nouvel élément {self.matching_recipe['result_name']} créé dans la zone de résultat")
+        else:
+            # Fallback au centre des zones de craft si pas de zone de résultat
             new_element = Element(self.craft_center[0], self.craft_center[1], result_data)
-            self.game.elements.add(new_element)
-            print(f"DEBUG: Nouvel élément {self.matching_recipe['result_name']} créé à {self.craft_center}")
+            print(f"DEBUG: Nouvel élément {self.matching_recipe['result_name']} créé au centre des zones de craft")
 
-            # Marquer une des zones comme occupée par le nouvel élément
-            if hasattr(self, 'zones_with_elements') and len(self.zones_with_elements) > 0:
-                self.zones_with_elements[0].have_object = True
-                print(f"DEBUG: Zone {self.zones_with_elements[0].id} marquée comme occupée par le nouvel élément")
+        self.game.elements.add(new_element)
 
-            # Donner de l'XP au joueur
-            self.game.player.gain_experience(5)
-            self.game.ui.show_message(f"Élément {self.matching_recipe['result_name']} créé!", 3.0)
+        # Donner de l'XP au joueur
+        self.game.player.gain_experience(5)
+        self.game.ui.show_message(f"Élément {self.matching_recipe['result_name']} créé!", 3.0)
 
         # Réinitialiser
         self.elements_to_craft = []
@@ -186,7 +191,6 @@ class AutoCraftManager:
         if hasattr(self, 'zones_with_elements'):
             delattr(self, 'zones_with_elements')
         self.game.animation_manager.remove_animation("element_crafting")
-
 
 def check_block_craft(posed_elements, recipes):
     """
