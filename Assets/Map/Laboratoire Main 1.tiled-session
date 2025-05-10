@@ -50,8 +50,8 @@
             "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 384,
-                "y": 224
+                "x": 369.33333333333337,
+                "y": 220
             }
         },
         "Map Laboratoire.tmx": {
@@ -61,8 +61,8 @@
             "scale": 0.75,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 364,
-                "y": 214.66666666666663
+                "x": 361.33333333333337,
+                "y": 212
             }
         },
         "Map Main Final.tmx": {
@@ -83,8 +83,8 @@
             "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 230.66666666666669,
-                "y": 238.66666666666663
+                "x": 229.33333333333337,
+                "y": 237.33333333333334
             }
         },
         "Maptest.tmx": {
@@ -136,6 +136,7 @@
     ],
     "project": "Laboratoire Main 1.tiled-project",
     "recentFiles": [
+        "Map Laboratoire.tmx",
         "Car.tsx",
         "Attack_2.tsx",
         "Background.tsx",
@@ -143,7 +144,6 @@
         "Labo.tsx",
         "Cave.tsx",
         "Main 2.tmx",
-        "Map Laboratoire.tmx",
         "Map cave.tmx",
         "Maptest.tmx",
         "grille.tsx",
