@@ -3,24 +3,24 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "Map cave.tmx",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
         "Attack zone.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.5,
+            "scaleInDock": 0.33,
             "scaleInEditor": 1
         },
         "Attack_2.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1,
+            "scaleInDock": 0.33,
             "scaleInEditor": 1
         },
         "Background.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.5,
+            "scaleInDock": 0.33,
             "scaleInEditor": 1
         },
         "Barrel_fire.tsx": {
@@ -30,38 +30,39 @@
         },
         "Car.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 1,
+            "scaleInDock": 0.33,
             "scaleInEditor": 1
         },
         "Cave.tsx": {
-            "scaleInDock": 0.5,
+            "dynamicWrapping": false,
+            "scaleInDock": 0.25,
             "scaleInEditor": 1
         },
         "Labo.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.5,
+            "scaleInDock": 0.33,
             "scaleInEditor": 1
         },
         "Main 2.tmx": {
             "expandedObjectLayers": [
                 6
             ],
-            "scale": 1,
-            "selectedLayer": 3,
+            "scale": 0.75,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 376,
-                "y": 224.5
+                "x": 372,
+                "y": 222.66666666666663
             }
         },
         "Map Laboratoire.tmx": {
             "expandedObjectLayers": [
                 7
             ],
-            "scale": 1.3253348214285714,
+            "scale": 0.75,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 366.6997894736842,
-                "y": 233.5258947368421
+                "x": 365.33333333333337,
+                "y": 216
             }
         },
         "Map Main Final.tmx": {
@@ -82,8 +83,8 @@
             "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 830.6666666666666,
-                "y": 271.3333333333333
+                "x": 232,
+                "y": 240
             }
         },
         "Maptest.tmx": {
@@ -125,29 +126,28 @@
     "openFiles": [
         "Map cave.tmx",
         "Map Laboratoire.tmx",
+        "Main 2.tmx",
         "Cave.tsx",
         "Labo.tsx",
         "Attack zone.tsx",
         "Background.tsx",
         "Attack_2.tsx",
-        "Tree4.tsx",
-        "Tree3.tsx",
-        "grille.tsx"
+        "Car.tsx"
     ],
     "project": "Laboratoire Main 1.tiled-project",
     "recentFiles": [
-        "Maptest.tmx",
         "Car.tsx",
-        "Map cave.tmx",
-        "Map Laboratoire.tmx",
-        "Cave.tsx",
-        "Labo.tsx",
-        "grille.tsx",
-        "Tree3.tsx",
-        "Tree4.tsx",
         "Attack_2.tsx",
         "Background.tsx",
-        "Attack zone.tsx"
+        "Attack zone.tsx",
+        "Labo.tsx",
+        "Cave.tsx",
+        "Main 2.tmx",
+        "Map Laboratoire.tmx",
+        "Map cave.tmx",
+        "Maptest.tmx",
+        "grille.tsx",
+        "Tree3.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
