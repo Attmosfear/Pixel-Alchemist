@@ -275,13 +275,21 @@ class Launcher:
             pygame.draw.circle(point_surface, color, (2, 2), 2)
             surface.blit(point_surface, (x - 2, y - 2))
 
-    def check_collision_with_enemies(self, enemies):
-        """Vérifie les collisions entre les projectiles et les ennemis"""
+    def check_collision_with_enemies(self, enemies, effect_manager=None):
+        """
+        Vérifie les collisions entre les projectiles et les ennemis
+        Si un effect_manager est fourni, crée aussi des effets au sol
+        """
         hits = []
 
         for projectile in list(self.projectiles):
             # Vérifier si le projectile est tombé au sol
             if projectile.rect.bottom >= self.floor_level:
+                # Créer un effet au sol si un gestionnaire d'effets est fourni
+                if effect_manager is not None:
+                    effect_manager.create_effect_for_potion(projectile.potion, projectile.rect.centerx,
+                                                            self.floor_level)
+
                 # Effet de zone pour certaines potions
                 if hasattr(projectile.potion, 'category') and projectile.potion.category == "Zone":
                     for enemy in enemies:
@@ -289,14 +297,26 @@ class Launcher:
                                              (enemy.rect.centery - projectile.rect.centery) ** 2)
                         if distance < 100:
                             hits.append((enemy, projectile.potion))
+                            # Marquer l'ennemi comme touché pour l'effet visuel
+                            enemy.was_hit = True
+                            enemy.hit_flash_time = 0.1  # Durée du flash en secondes
 
                 projectile.kill()
                 continue
 
-            # Collision directe avec un ennemi
+                # Collision directe avec un ennemi
             for enemy in enemies:
                 if projectile.rect.colliderect(enemy.rect):
                     hits.append((enemy, projectile.potion))
+                    # Marquer l'ennemi comme touché pour l'effet visuel
+                    enemy.was_hit = True
+                    enemy.hit_flash_time = 0.1  # Durée du flash en secondes
+
+                    # Créer un effet au point d'impact si un gestionnaire d'effets est fourni
+                    if effect_manager is not None:
+                        effect_manager.create_effect_for_potion(projectile.potion, projectile.rect.centerx,
+                                                                    projectile.rect.centery)
+
                     projectile.kill()
                     break
 

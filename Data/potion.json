@@ -1,10 +1,151 @@
 {
     "potions": [
-        { "id": "P001", "name": "Vapeur", "ingredients": ["Feu", "Eau"], "effect": "Aveuglement temporaire", "category": "Statut" },
-        { "id": "P002", "name": "Fumée", "ingredients": ["Feu", "Air"], "effect": "Dégâts légers", "category": "Attaque" },
-        { "id": "P003", "name": "Lave", "ingredients": ["Feu", "Terre"], "effect": "Brûlure", "category": "Attaque" },
-        { "id": "P004", "name": "Brouillard", "ingredients": ["Eau", "Air"], "effect": "Esquive augmentée", "category": "Défense" },
-        { "id": "P005", "name": "Boue", "ingredients": ["Eau", "Terre"], "effect": "Ralenti", "category": "Statut" },
-        { "id": "P006", "name": "Poussière", "ingredients": ["Terre", "Air"], "effect": "Cécité", "category": "Statut" }
+        {
+            "id": "P001",
+            "name": "Vapeur",
+            "ingredients": ["Feu", "Eau"],
+            "effect": "Dégâts de brûlure en zone + désoriente les ennemis proches",
+            "category": "Attaque"
+        },
+        {
+            "id": "P002",
+            "name": "Fumée",
+            "ingredients": ["Feu", "Air"],
+            "effect": "Crée un écran de fumée où les ennemis ont 50% de chance de rater leurs attaques",
+            "category": "Défense"
+        },
+        {
+            "id": "P003",
+            "name": "Lave",
+            "ingredients": ["Feu", "Terre"],
+            "effect": "Inflige de lourds dégâts à l'impact + laisse une flaque brûlante persistante",
+            "category": "Attaque"
+        },
+        {
+            "id": "P004",
+            "name": "Boue",
+            "ingredients": ["Eau", "Terre"],
+            "effect": "Ralentit les ennemis touchés et réduit leur cadence d'attaque",
+            "category": "Statut"
+        },
+        {
+            "id": "P005",
+            "name": "Brouillard",
+            "ingredients": ["Eau", "Air"],
+            "effect": "Rend le joueur temporairement invisible aux ennemis proches",
+            "category": "Défense"
+        },
+        {
+            "id": "P006",
+            "name": "Poussière",
+            "ingredients": ["Terre", "Air"],
+            "effect": "Aveugle les ennemis : ils ratent leur cible pendant quelques secondes",
+            "category": "Statut"
+        },
+        {
+            "id": "P007",
+            "name": "Piege de roc",
+            "ingredients": ["Terre", "Terre"],
+            "effect": "Étourdit un ennemi ciblé pendant 2 secondes",
+            "category": "Statut"
+        },
+        {
+            "id": "P008",
+            "name": "Flammes folles",
+            "ingredients": ["Feu", "Feu"],
+            "effect": "Explosion instable : dégâts aléatoires parfois massifs",
+            "category": "Attaque"
+        },
+        {
+            "id": "P009",
+            "name": "Goutte pure",
+            "ingredients": ["Eau", "Eau"],
+            "effect": "Dissout les protections ennemies et annule les boucliers",
+            "category": "Attaque"
+        },
+        {
+            "id": "P010",
+            "name": "Brise légère",
+            "ingredients": ["Air", "Air"],
+            "effect": "Repousse les ennemis et interrompt leur action",
+            "category": "Défense"
+        },
+        {
+            "id": "P011",
+            "name": "Cendres",
+            "ingredients": ["Lave", "Fumée"],
+            "effect": "Réduit la puissance d'attaque des ennemis dans la zone pendant 5 sec",
+            "category": "Défense"
+        },
+        {
+            "id": "P012",
+            "name": "Brume brûlante",
+            "ingredients": ["Vapeur", "Brouillard"],
+            "effect": "Zone brûlante persistante + empêche les soins ennemis",
+            "category": "Attaque"
+        },
+        {
+            "id": "P013",
+            "name": "Marécage",
+            "ingredients": ["Boue", "Brouillard"],
+            "effect": "Flaque qui ralentit, affaiblit et piège les ennemis",
+            "category": "Statut"
+        },
+        {
+            "id": "P014",
+            "name": "Nuée ardente",
+            "ingredients": ["Flammes folles", "Poussière"],
+            "effect": "Explosion de feu + repousse tous les ennemis autour",
+            "category": "Attaque"
+        },
+        {
+            "id": "P015",
+            "name": "Géode",
+            "ingredients": ["Piege de roc", "Goutte pure"],
+            "effect": "Explosion de fragments tranchants en cône",
+            "category": "Attaque"
+        },
+        {
+            "id": "P016",
+            "name": "Tornade sèche",
+            "ingredients": ["Brise légère", "Poussière"],
+            "effect": "Mini-tornade infligeant plusieurs coups en spirale",
+            "category": "Attaque"
+        },
+        {
+            "id": "P017",
+            "name": "Enfer embrumé",
+            "ingredients": ["Cendres", "Brume brûlante"],
+            "effect": "Zone infernale : brûlure sur durée + panique ennemie",
+            "category": "Attaque"
+        },
+        {
+            "id": "P018",
+            "name": "Racine",
+            "ingredients": ["Marécage", "Goutte pure"],
+            "effect": "Immobilise un grand ennemi ou plusieurs petits",
+            "category": "Statut"
+        },
+        {
+            "id": "P019",
+            "name": "Cœur de volcan",
+            "ingredients": ["Lave", "Piege de roc"],
+            "effect": "Jaillit de lave : éruption violente à gros dégâts",
+            "category": "Attaque"
+        },
+        {
+            "id": "P020",
+            "name": "Tempête sauvage",
+            "ingredients": ["Brise légère", "Flammes folles"],
+            "effect": "Frappe aléatoire de feu, vent et projectiles",
+            "category": "Attaque"
+        },
+        {
+            "id": "P021",
+            "name": "Cristal ancien",
+            "ingredients": ["Géode", "Cendres"],
+            "effect": "Gèle un ennemi, explose s'il est re-touché (combo possible)",
+            "category": "Statut"
+        }
     ]
 }

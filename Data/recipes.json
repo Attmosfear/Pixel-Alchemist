@@ -71,6 +71,186 @@
                 "Terre",
                 "Air"
             ]
+        },
+        {
+            "result": 11,
+            "result_name": "Pierre",
+            "ingredients": [
+                3,
+                3
+            ],
+            "ingredient_names": [
+                "Terre",
+                "Terre"
+            ]
+        },
+        {
+            "result": 12,
+            "result_name": "Flammes folles",
+            "ingredients": [
+                1,
+                1
+            ],
+            "ingredient_names": [
+                "Feu",
+                "Feu"
+            ]
+        },
+        {
+            "result": 13,
+            "result_name": "Goutte pure",
+            "ingredients": [
+                2,
+                2
+            ],
+            "ingredient_names": [
+                "Eau",
+                "Eau"
+            ]
+        },
+        {
+            "result": 14,
+            "result_name": "Brise légère",
+            "ingredients": [
+                4,
+                4
+            ],
+            "ingredient_names": [
+                "Air",
+                "Air"
+            ]
+        },
+        {
+            "result": 15,
+            "result_name": "Cendres",
+            "ingredients": [
+                7,
+                6
+            ],
+            "ingredient_names": [
+                "Lave",
+                "Fumée"
+            ]
+        },
+        {
+            "result": 16,
+            "result_name": "Brume brûlante",
+            "ingredients": [
+                5,
+                9
+            ],
+            "ingredient_names": [
+                "Vapeur",
+                "Brouillard"
+            ]
+        },
+        {
+            "result": 17,
+            "result_name": "Marécage",
+            "ingredients": [
+                8,
+                9
+            ],
+            "ingredient_names": [
+                "Boue",
+                "Brouillard"
+            ]
+        },
+        {
+            "result": 18,
+            "result_name": "Nuée ardente",
+            "ingredients": [
+                12,
+                10
+            ],
+            "ingredient_names": [
+                "Flammes folles",
+                "Poussière"
+            ]
+        },
+        {
+            "result": 19,
+            "result_name": "Géode",
+            "ingredients": [
+                11,
+                13
+            ],
+            "ingredient_names": [
+                "Pierre",
+                "Goutte pure"
+            ]
+        },
+        {
+            "result": 20,
+            "result_name": "Tornade sèche",
+            "ingredients": [
+                14,
+                10
+            ],
+            "ingredient_names": [
+                "Brise légère",
+                "Poussière"
+            ]
+        },
+        {
+            "result": 21,
+            "result_name": "Enfer embrumé",
+            "ingredients": [
+                15,
+                16
+            ],
+            "ingredient_names": [
+                "Cendres",
+                "Brume brûlante"
+            ]
+        },
+        {
+            "result": 22,
+            "result_name": "Racine",
+            "ingredients": [
+                17,
+                13
+            ],
+            "ingredient_names": [
+                "Marécage",
+                "Goutte pure"
+            ]
+        },
+        {
+            "result": 23,
+            "result_name": "Cœur de volcan",
+            "ingredients": [
+                7,
+                11
+            ],
+            "ingredient_names": [
+                "Lave",
+                "Pierre"
+            ]
+        },
+        {
+            "result": 24,
+            "result_name": "Tempête sauvage",
+            "ingredients": [
+                14,
+                12
+            ],
+            "ingredient_names": [
+                "Brise légère",
+                "Flammes folles"
+            ]
+        },
+        {
+            "result": 25,
+            "result_name": "Cristal ancien",
+            "ingredients": [
+                19,
+                15
+            ],
+            "ingredient_names": [
+                "Géode",
+                "Cendres"
+            ]
         }
     ]
 }

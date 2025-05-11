@@ -1,14 +1,12 @@
 import pygame
-import pytmx
-import pyscroll
 import math
-import random
+import random  # Nécessaire pour la sélection aléatoire de conseils
+import os
 from Phase2.enemy import EnemyManager
 from Phase2.launcher import Launcher
 from Phase2.laboratory import Laboratory
 from Phase2.effects import EffectManager
 from constants import *
-
 
 class DefenseGame:
     """Classe principale pour la phase de défense du laboratoire"""
@@ -21,64 +19,57 @@ class DefenseGame:
         # Récupération des potions créées dans la phase 1
         self.available_potions = list(potions)
 
-        # Charger le background TMX pour la phase de défense
+        self.game_over_state = False  # Indique si le jeu est terminé
+        self.restart_game = False  # Indique si le joueur souhaite recommencer
+        self.exit_to_lab = False  # Indique si le joueur souhaite retourner au laboratoire
+
+        # Définir une hauteur de sol fixe à 448-128 = 320 pixels
+        self.floor_level = 425 # Hauteur par défaut du sol
+
+        # Charger le background PNG pour la phase 2
         try:
-            # Assurez-vous que le chemin est correct selon votre structure de dossiers
-            self.tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Main 2.tmx")
-            map_data = pyscroll.data.TiledMapData(self.tmx_data)
+            self.background = pygame.image.load('Assets/Map/Map Main 2.png').convert()
+            print("Background PNG chargé avec succès pour la phase de défense!")
+        except FileNotFoundError:
+            # En cas d'erreur, créer un background par défaut
+            print("Image map_main_2.png non trouvée. Utilisation d'un background par défaut.")
+            self.background = pygame.Surface((800, 600))
+            self.background.fill((100, 150, 255))  # Fond bleu ciel
 
-            # Créer le renderer pour afficher la carte TMX
-            self.map_layer = pyscroll.orthographic.BufferedRenderer(map_data, (800, 600))
+            # Sol
+            pygame.draw.rect(self.background, (100, 70, 0), (0, self.floor_level, 800, 600 - self.floor_level))
 
-            # Créer un groupe pour dessiner la carte
-            self.group = pyscroll.PyscrollGroup(map_layer=self.map_layer, default_layer=1)
+            # Quelques éléments de décor basiques
+            # Montagnes en arrière-plan
+            for i in range(5):
+                x = 100 + i * 160
+                height = 80 + random.randint(0, 40)
+                pygame.draw.polygon(self.background, (80, 80, 80),
+                                    [(x - 60, self.floor_level), (x, self.floor_level - height),
+                                     (x + 60, self.floor_level)])
 
-            # Message de succès
-            print("Background TMX chargé avec succès pour la phase de défense!")
+            # Quelques nuages
+            for i in range(3):
+                x = 150 + i * 250
+                y = 50 + random.randint(0, 100)
+                pygame.draw.ellipse(self.background, (230, 230, 230), (x, y, 120, 40))
+                pygame.draw.ellipse(self.background, (230, 230, 230), (x + 30, y - 20, 80, 40))
 
-            # Utiliser le background TMX au lieu de l'image statique
-            self.use_tmx_background = True
+        # Adapter la taille si nécessaire
+        if self.background.get_size() != (800, 600):
+            self.background = pygame.transform.scale(self.background, (800, 600))
 
-            # Définir une hauteur de sol fixe à 448-128 = 320 pixels (128 pixels du bas de l'écran)
-            self.floor_level = 320  # Hauteur par défaut du sol
-
-            # Trouver le niveau du sol à partir des tiles
-            for y in range(self.tmx_data.height):
-                for x in range(self.tmx_data.width):
-                    if self.tmx_data.get_tile_gid(x, y, 0) == 4:  # ID du sol (selon votre TMX)
-                        self.floor_level = y * 32  # 32 est la taille de la tile
-                        break
-                if self.floor_level != 550:  # Si on a trouvé le niveau du sol, on sort de la boucle
-                    break
-
-            print(f"Niveau du sol détecté: {self.floor_level}")
-
-        except Exception as e:
-            # En cas d'erreur, utiliser le background par défaut
-            print(f"Erreur lors du chargement du background TMX: {e}")
-            print("Utilisation du background par défaut")
-            self.use_tmx_background = False
-            self.floor_level = 550
-
-            # Charger le background par défaut
-            try:
-                self.background = pygame.image.load('Assets/Art/Backgrounds/defense_bg.png').convert()
-            except FileNotFoundError:
-                # Image par défaut si l'image n'existe pas
-                self.background = pygame.Surface((800, 600))
-                self.background.fill((100, 150, 255))  # Fond bleu ciel
-                # Sol
-                pygame.draw.rect(self.background, (100, 70, 0), (0, 550, 800, 50))
-
-                # Laboratoire - positionné selon le niveau du sol
         # Laboratoire - positionné à une position fixe
-        self.laboratory = Laboratory(50, 170)  # Placé au-dessus du sol
+        self.laboratory = Laboratory(50, self.floor_level - 145)  # Placé au-dessus du sol
 
         # Lanceur de potions - placé près du sol
-        self.launcher = Launcher(100, 300, self.floor_level)  # Près du sol
+        self.launcher = Launcher(100, self.floor_level - 20 , self.floor_level)  # Près du sol
 
         # Gestionnaire d'ennemis - avec le bon niveau de sol
         self.enemy_manager = EnemyManager(WINDOW_WIDTH, WINDOW_HEIGHT, self.floor_level)
+
+        # Gestionnaire d'effets visuels
+        self.effect_manager = EffectManager()
 
         # Gestionnaire d'effets visuels
         self.effect_manager = EffectManager()
@@ -108,7 +99,20 @@ class DefenseGame:
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    return False
+                    pass
+
+                # Si on est en état de game over, gérer les options spéciales
+                if self.game_over_state:
+                    if event.key == pygame.K_r:  # R pour recommencer
+                        self.restart_game = True
+                        return False  # Sortir de la boucle de jeu pour redémarrer
+
+                    elif event.key == pygame.K_RETURN:  # Entrée pour retourner au laboratoire
+                        running = False
+                        return False  # Sortir de la boucle de jeu pour retourner au laboratoire
+
+                    # Ignorer les autres touches en état de game over
+                    continue
 
                 # Changer la potion sélectionnée (avec les touches)
                 elif event.key == pygame.K_LEFT:
@@ -178,30 +182,17 @@ class DefenseGame:
         # Mise à jour des effets visuels
         self.effect_manager.update(dt)
 
+        # Mise à jour des effets visuels
+        self.effect_manager.update(dt)
+
+        # Appliquer les effets aux ennemis
+        self.effect_manager.affect_enemies(self.enemy_manager.enemies, dt)
+
         # Vérifier les collisions entre projectiles et ennemis
-        hits = self.launcher.check_collision_with_enemies(self.enemy_manager.enemies)
+        hits = self.launcher.check_collision_with_enemies(self.enemy_manager.enemies, self.effect_manager)
         for enemy, potion in hits:
             # Appliquer l'effet de la potion à l'ennemi
             enemy.apply_potion_effect(potion)
-
-            # Créer l'effet visuel approprié
-            hit_x, hit_y = enemy.rect.center
-
-            # Déterminer le type d'effet en fonction de la potion
-            if hasattr(potion, 'effect'):
-                effect_name = potion.effect.lower()
-
-                if "dégâts" in effect_name or "brûlure" in effect_name:
-                    self.effect_manager.create_explosion(hit_x, hit_y, 30, (255, 100, 0))
-                elif "ralenti" in effect_name or "boue" in effect_name:
-                    self.effect_manager.create_smoke(hit_x, hit_y, (139, 69, 19))  # Marron
-                elif "aveuglement" in effect_name or "vapeur" in effect_name:
-                    self.effect_manager.create_smoke(hit_x, hit_y, (200, 200, 200))  # Gris
-                elif "brouillard" in effect_name:
-                    self.effect_manager.create_water_splash(hit_x, hit_y, (200, 200, 255))
-                else:
-                    # Effet par défaut
-                    self.effect_manager.create_explosion(hit_x, hit_y, 20, (0, 255, 0))
 
             # Ajouter des points au score
             self.score += 10  # Points pour avoir touché un ennemi
@@ -221,21 +212,11 @@ class DefenseGame:
 
     def draw(self):
         """Affiche tous les éléments du jeu"""
-        # Dessiner le fond
-        if hasattr(self, 'use_tmx_background') and self.use_tmx_background:
-            # Utiliser le background TMX en s'assurant qu'il s'affiche correctement
-            # Effacer l'écran d'abord pour éviter les artéfacts
-            self.screen.fill((0, 0, 0))
+        # Dessiner le fond (simple PNG)
+        self.screen.blit(self.background, (0, 0))
 
-            # Dessiner la carte TMX sans la déplacer
-            self.group.draw(self.screen)
-        else:
-            # Utiliser le background statique
-            self.screen.blit(self.background, (0, 0))
-
-        # Dessiner le laboratoire (seulement si on n'utilise pas le TMX, car il est déjà dans le TMX)
-        if not hasattr(self, 'use_tmx_background') or not self.use_tmx_background:
-            self.laboratory.draw(self.screen)
+        # Dessiner le laboratoire
+        self.laboratory.draw(self.screen)
 
         # Dessiner les effets visuels (derrière les ennemis)
         self.effect_manager.draw(self.screen)
@@ -325,28 +306,59 @@ class DefenseGame:
         self.screen.blit(instructions, (250, 580))
 
     def draw_game_over(self):
-        """Affiche l'écran de fin de partie"""
-        # Overlay semi-transparent
+        """Affiche l'écran de fin de partie avec conseils et option de redémarrage"""
+        # Overlay semi-transparent pour assombrir l'écran
         overlay = pygame.Surface((800, 600), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))
+        overlay.fill((0, 0, 0, 220))  # Noir plus opaque pour meilleure lisibilité
         self.screen.blit(overlay, (0, 0))
 
-        # Texte de game over
+        # Titre "GAME OVER" en gros et en rouge
         game_over_text = self.title_font.render("GAME OVER", True, (255, 0, 0))
-        self.screen.blit(game_over_text, (400 - game_over_text.get_width() // 2, 200))
+        self.screen.blit(game_over_text, (400 - game_over_text.get_width() // 2, 150))
+
+        # Statistiques de la partie
+        font_stats = pygame.font.SysFont('Arial', 22)
 
         # Score final
-        score_text = self.font.render(f"Score final: {self.score}", True, (255, 255, 255))
-        self.screen.blit(score_text, (400 - score_text.get_width() // 2, 250))
+        score_text = font_stats.render(f"Score final : {self.score}", True, (255, 255, 255))
+        self.screen.blit(score_text, (400 - score_text.get_width() // 2, 210))
 
         # Vagues survécues
-        wave_text = self.font.render(f"Vagues survécues: {self.wave - 1}", True, (255, 255, 255))
-        self.screen.blit(wave_text, (400 - wave_text.get_width() // 2, 280))
+        wave_text = font_stats.render(f"Vagues survécues : {self.wave - 1}", True, (255, 255, 255))
+        self.screen.blit(wave_text, (400 - wave_text.get_width() // 2, 240))
 
-        # Instructions pour continuer
-        continue_text = self.font.render("Appuyez sur ECHAP pour revenir à la phase de préparation", True,
-                                         (200, 200, 200))
-        self.screen.blit(continue_text, (400 - continue_text.get_width() // 2, 350))
+        # Générer un conseil utile en fonction de la performance du joueur
+        font_tip = pygame.font.SysFont('Arial', 18)
+        tip_text = self.get_game_over_tip()
+
+        # Fond pour le conseil
+        tip_bg = pygame.Surface((600, 70), pygame.SRCALPHA)
+        tip_bg.fill((0, 0, 100, 180))  # Bleu foncé semi-transparent
+        self.screen.blit(tip_bg, (100, 280))
+
+        # Titre "Conseil"
+        tip_title = font_tip.render("Conseil pour la prochaine partie :", True, (255, 255, 0))
+        self.screen.blit(tip_title, (110, 290))
+
+        # Le conseil lui-même
+        tip = font_tip.render(tip_text, True, (255, 255, 255))
+        self.screen.blit(tip, (110, 320))
+
+        # Options pour le joueur
+        font_options = pygame.font.SysFont('Arial', 24)
+
+        # Option de redémarrage
+        restart_text = font_options.render("Appuyez sur R pour recommencer", True, (0, 255, 0))
+        self.screen.blit(restart_text, (400 - restart_text.get_width() // 2, 380))
+
+        # Option de retour au laboratoire
+        menu_text = font_options.render("Appuyez sur ENTRÉE pour retourner au laboratoire", True, (200, 200, 200))
+        self.screen.blit(menu_text, (400 - menu_text.get_width() // 2, 420))
+
+        # Petit message additionnel
+        tip2_text = font_tip.render("N'oubliez pas de créer différents types de potions pour la prochaine défense !",
+                                    True, (255, 200, 100))
+        self.screen.blit(tip2_text, (400 - tip2_text.get_width() // 2, 470))
 
     def next_wave(self):
         """Passe à la vague suivante"""
@@ -365,6 +377,36 @@ class DefenseGame:
         # Petite régénération de santé entre les vagues
         self.laboratory.repair(20)
 
+    def get_game_over_tip(self):
+        """Génère un conseil en fonction de la performance du joueur"""
+        # Plusieurs conseils possibles selon différentes situations de jeu
+        tips = [
+            "Utilisez les potions de ralentissement (Boue) pour avoir plus de temps pour viser",
+            "Les potions de zone comme la Lave sont efficaces contre les groupes d'ennemis",
+            "Alternez entre potions d'attaque et potions de statut pour maximiser l'effet",
+            "Visez devant les ennemis pour qu'ils marchent dans vos flaques d'effet",
+            "Essayez de créer des potions plus puissantes en combinant des éléments avancés",
+            "Les ennemis volants sont plus faciles à toucher avec des potions à effet de zone",
+            "Créez plus de potions pendant la phase 1 pour être mieux préparé",
+            "Les potions de Cristal peuvent immobiliser les ennemis les plus coriaces"
+        ]
+
+        # Conseil spécifique si le joueur n'a pas survécu à la première vague
+        if self.wave <= 1:
+            return "Prenez votre temps pour viser. Les potions sont précieuses !"
+
+        # Conseil spécifique si le joueur n'avait pas beaucoup de potions
+        elif len(self.available_potions) == 0:
+            return "Créez plus de potions pendant la phase de préparation pour mieux vous défendre"
+
+        # Conseil spécifique si le joueur a atteint un score élevé
+        elif self.score > 500:
+            return "Votre stratégie fonctionne bien ! Essayez maintenant des combinaisons de potions plus complexes"
+
+        # Sinon, conseil aléatoire
+        else:
+            return random.choice(tips)
+
     def game_over(self):
         """Gère la fin de partie"""
         # Les points bonus seront déjà comptabilisés dans le score
@@ -372,6 +414,9 @@ class DefenseGame:
         # Sauvegarder les données dans le profil du joueur
         self.player.score += self.score
         self.player.gain_experience(self.score // 10)  # XP basée sur le score
+
+        # Activer l'état de game over
+        self.game_over_state = True
 
     def run(self):
         """Boucle principale de la phase de défense"""
@@ -386,20 +431,28 @@ class DefenseGame:
             # Gérer les événements
             running = self.handle_events()
 
+            # Si le joueur veut recommencer, indiquer qu'il faut redémarrer le jeu
+            if self.restart_game:
+                return "restart", self.score, self.wave
+
+            # Si le joueur veut retourner au laboratoire après un game over
+            if self.exit_to_lab:
+                return self.score, self.wave
+
             # Calculer le delta temps
             dt = clock.tick(60) / 1000.0
 
-            # Mettre à jour le jeu
-            self.update(dt)
+            # Ne mettre à jour le jeu que s'il n'est pas en état de game over
+            if not self.game_over_state:
+                self.update(dt)
 
             # Dessiner tous les éléments
             self.draw()
 
-            # Vérifier si la partie est terminée
-            if self.laboratory.health <= 0:
-                # Attendre un peu avant de quitter
-                pygame.time.delay(3000)
-                break
+            # Vérifier si le jeu est terminé
+            if self.laboratory.health <= 0 and not self.game_over_state:
+                # Activer l'état de game over
+                self.game_over()
 
-        # Retourner le score pour la phase suivante
+        # Retourner le score et la vague pour l'utilisation ultérieure
         return self.score, self.wave

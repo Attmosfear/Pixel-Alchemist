@@ -1069,30 +1069,53 @@ class Game:
                 self.screen.blit(text_surface, (zone.rect.x + 2, zone.rect.y + 2))
 
     def start_defense_phase(self):
-        """Démarre la phase de défense (phase 2) manuellement"""
+        """Démarre la phase de défense (phase 2) et gère le redémarrage"""
         # Sauvegarder l'état actuel du jeu si nécessaire
         current_screen = self.screen.copy()
 
-        # Créer une instance de DefenseGame avec toutes les potions disponibles
-        defense_game = DefenseGame(self.screen, self.player, self.potions)
+        while True:  # Boucle pour permettre de rejouer
+            # Créer une instance de DefenseGame avec toutes les potions disponibles
+            defense_game = DefenseGame(self.screen, self.player, self.potions)
 
-        # Afficher un message de transition
-        self.ui.show_message("Préparation de la défense du laboratoire...", 2.0)
-        self.display()  # Mettre à jour l'affichage pour voir le message
-        pygame.time.delay(2000)  # Attendre 2 secondes pour la transition
+            # Afficher un message de transition
+            self.ui.show_message("Préparation de la défense du laboratoire...", 2.0)
+            self.display()  # Mettre à jour l'affichage pour voir le message
+            pygame.time.delay(2000)  # Attendre 2 secondes pour la transition
 
-        # Lancer la phase de défense
-        defense_score, defense_wave = defense_game.run()
+            # Lancer la phase de défense
+            result = defense_game.run()
 
-        # Donner de l'expérience au joueur en fonction du score
-        self.player.gain_experience(defense_score // 10)
+            # Vérifier si le joueur veut recommencer
+            if isinstance(result, tuple) and len(result) == 3 and result[0] == "restart":
+                # Le joueur veut recommencer, extraire le score et la vague
+                defense_score, defense_wave = result[1], result[2]
 
-        # Afficher les résultats après la défense
-        self.ui.show_message(f"Défense terminée ! Score: {defense_score}, Vagues: {defense_wave}", 3.0)
+                # Donner de l'expérience au joueur en fonction du score
+                self.player.gain_experience(defense_score // 10)
 
-        # Rétablir l'affichage de la phase 1
-        self.screen.blit(current_screen, (0, 0))
-        self.display()  # Mettre à jour l'affichage une fois de plus
+                # Afficher un message pour le redémarrage
+                self.ui.show_message("Redémarrage de la défense du laboratoire...", 2.0)
+                self.display()
+                pygame.time.delay(1500)
+
+                # La boucle continue, créant une nouvelle partie
+                continue
+
+            # Sinon, c'est une fin normale de la partie
+            defense_score, defense_wave = result
+
+            # Donner de l'expérience au joueur en fonction du score
+            self.player.gain_experience(defense_score // 10)
+
+            # Afficher les résultats après la défense
+            self.ui.show_message(f"Défense terminée ! Score: {defense_score}, Vagues: {defense_wave}", 3.0)
+
+            # Rétablir l'affichage de la phase 1
+            self.screen.blit(current_screen, (0, 0))
+            self.display()  # Mettre à jour l'affichage une fois de plus
+
+            # Sortir de la boucle, retour à la phase 1
+            break
 
     def print_map_zones(self):
         """Affiche toutes les zones map_zone disponibles dans chaque carte"""

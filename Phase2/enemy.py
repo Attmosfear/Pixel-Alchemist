@@ -27,6 +27,8 @@ class Enemy(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(topleft=(x, y))
 
+
+
         # Attributs de l'ennemi
         self.speed = speed
         self.max_health = health
@@ -39,6 +41,19 @@ class Enemy(pygame.sprite.Sprite):
         self.burn_duration = 0
         self.is_frozen = False
         self.freeze_duration = 0
+
+        self.is_slowed = False
+        self.slow_factor = 1.0  # 1.0 = vitesse normale, valeurs plus petites = ralentissement
+        self.slow_duration = 0
+        self.is_burning = False
+        self.burn_damage = 0
+        self.burn_duration = 0
+        self.is_frozen = False
+        self.freeze_duration = 0
+        self.is_blinded = False
+        self.blind_duration = 0
+        self.was_hit = False  # Pour les effets visuels
+        self.hit_flash_time = 0
 
         # Attributs pour l'animation
         self.animation_frame = 0
@@ -101,19 +116,30 @@ class Enemy(pygame.sprite.Sprite):
             if self.freeze_duration <= 0:
                 self.is_frozen = False
 
+        if self.is_blinded:
+            self.blind_duration -= dt
+            if self.blind_duration <= 0:
+                self.is_blinded = False
+
+        # Effet visuel de flash quand touché
+        if self.was_hit:
+            self.hit_flash_time -= dt
+            if self.hit_flash_time <= 0:
+                self.was_hit = False
+
         # Mouvement de l'ennemi (sauf s'il est gelé)
         if not self.is_frozen:
             effective_speed = self.speed * self.slow_factor
+
+            # Si l'ennemi est aveugle, il peut aller dans une direction aléatoire
+            if self.is_blinded and random.random() < 0.1:  # 10% de chance de changer de direction
+                self.direction = -self.direction
+
             self.rect.x += self.direction * effective_speed
 
             # Si l'ennemi vole, ajouter un mouvement vertical sinusoïdal
             if self.flying:
                 self.rect.y += math.sin(pygame.time.get_ticks() * 0.001) * 2
-
-        # Animation de base
-        self.animation_frame += self.animation_speed * dt
-        if self.animation_frame >= 2:
-            self.animation_frame = 0
 
         # Vérifier si l'ennemi est mort
         if self.health <= 0:
@@ -134,6 +160,48 @@ class Enemy(pygame.sprite.Sprite):
         # Partie remplie de la barre (vert)
         fill_width = int(bar_width * (self.health / self.max_health))
         pygame.draw.rect(surface, (0, 255, 0), (x, y, fill_width, bar_height))
+
+    def draw(self, surface):
+        """Dessine l'ennemi avec ses effets visuels"""
+        # Dessiner l'image de base de l'ennemi
+        img = self.image.copy()  # Copier pour ne pas modifier l'original
+
+        # Ajouter des effets visuels selon l'état
+        if self.was_hit:
+            # Flash blanc quand touché
+            white_overlay = pygame.Surface(img.get_size(), pygame.SRCALPHA)
+            white_overlay.fill((255, 255, 255, 150))
+            img.blit(white_overlay, (0, 0))
+
+        if self.is_burning:
+            # Teinte rouge pour le feu
+            fire_overlay = pygame.Surface(img.get_size(), pygame.SRCALPHA)
+            fire_overlay.fill((255, 0, 0, 100))
+            img.blit(fire_overlay, (0, 0))
+
+            # Particules de feu (option)
+            for _ in range(2):
+                x = random.randint(0, img.get_width())
+                y = random.randint(0, img.get_height())
+                pygame.draw.circle(img, (255, 100, 0, 200), (x, y), 2)
+
+        if self.is_frozen:
+            # Teinte bleue pour le gel
+            ice_overlay = pygame.Surface(img.get_size(), pygame.SRCALPHA)
+            ice_overlay.fill((0, 100, 255, 150))
+            img.blit(ice_overlay, (0, 0))
+
+        if self.is_slowed:
+            # Teinte marron pour la boue
+            mud_overlay = pygame.Surface(img.get_size(), pygame.SRCALPHA)
+            mud_overlay.fill((139, 69, 19, 100))
+            img.blit(mud_overlay, (0, 0))
+
+        # Afficher l'ennemi avec ses effets
+        surface.blit(img, self.rect)
+
+        # Dessiner la barre de vie
+        self.draw_health_bar(surface)
 
 
 class EnemyManager:
