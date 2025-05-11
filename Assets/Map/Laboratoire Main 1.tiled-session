@@ -1,5 +1,5 @@
 {
-    "activeFile": "Map cave.tmx",
+    "activeFile": "Main 2/Car.tsx",
     "expandedProjectPaths": [
         "."
     ],
@@ -46,9 +46,22 @@
             "scale": 0.75,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 635.3333333333333,
-                "y": 181.33333333333331
+                "x": 384.66666666666663,
+                "y": 35.333333333333314
             }
+        },
+        "Main 2/Attack zone.tsx": {
+            "scaleInDock": 1
+        },
+        "Main 2/Attack_2.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Main 2/Car.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "Map Laboratoire.tmx": {
             "expandedObjectLayers": [
@@ -57,8 +70,8 @@
             "scale": 0.75,
             "selectedLayer": 6,
             "viewCenter": {
-                "x": 162,
-                "y": 378.66666666666663
+                "x": 256.66666666666663,
+                "y": 224.66666666666663
             }
         },
         "Map Main Final.tmx": {
@@ -79,8 +92,8 @@
             "scale": 0.75,
             "selectedLayer": 5,
             "viewCenter": {
-                "x": 278,
-                "y": 181.33333333333331
+                "x": 256.66666666666663,
+                "y": 223.33333333333337
             }
         },
         "Maptest.tmx": {
@@ -115,30 +128,30 @@
             "scaleInDock": 0.5
         }
     },
+    "last.externalTilesetPath": "C:/Users/romai/PycharmProjects/Pixel-Alchemist/Assets/Map/Main 2",
+    "last.imagePath": "C:/Users/romai/PycharmProjects/Pixel-Alchemist/Assets/Map/Main 2",
     "openFiles": [
         "Map cave.tmx",
         "Map Laboratoire.tmx",
         "Main 2.tmx",
         "Cave.tsx",
         "Labo.tsx",
-        "Attack zone.tsx",
-        "Background.tsx",
-        "Attack_2.tsx",
-        "Car.tsx"
+        "Main 2/Attack_2.tsx",
+        "Main 2/Car.tsx"
     ],
     "project": "Laboratoire Main 1.tiled-project",
     "recentFiles": [
+        "Map cave.tmx",
         "Map Laboratoire.tmx",
+        "Main 2.tmx",
+        "Cave.tsx",
+        "Labo.tsx",
+        "Main 2/Attack_2.tsx",
+        "Main 2/Car.tsx",
         "Car.tsx",
         "Attack_2.tsx",
         "Background.tsx",
         "Attack zone.tsx",
-        "Labo.tsx",
-        "Cave.tsx",
-        "Main 2.tmx",
-        "Map cave.tmx",
-        "Maptest.tmx",
-        "grille.tsx",
-        "Tree3.tsx"
+        "Maptest.tmx"
     ]
 }
