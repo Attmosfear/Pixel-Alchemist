@@ -79,7 +79,13 @@ class PotionProjectile(pygame.sprite.Sprite):
 class Launcher:
     """Classe pour gérer le lanceur de potions"""
 
-    def __init__(self, x, y):
+    def __init__(self, x=None, y=None):
+        # Position du lanceur adaptée au TMX
+        if x is None:
+            x = 100  # Position X du lanceur
+        if y is None:
+            y = 520  # Position Y du lanceur - juste au-dessus du sol dans le TMX
+
         self.x = x
         self.y = y
 
