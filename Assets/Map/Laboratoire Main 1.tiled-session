@@ -1,0 +1,144 @@
+{
+    "activeFile": "Map cave.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "Attack zone.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "Attack_2.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "Background.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "Barrel_fire.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Car.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "Cave.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.25,
+            "scaleInEditor": 1
+        },
+        "Labo.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "Main 2.tmx": {
+            "expandedObjectLayers": [
+                6
+            ],
+            "scale": 0.75,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 635.3333333333333,
+                "y": 181.33333333333331
+            }
+        },
+        "Map Laboratoire.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 0.75,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 162,
+                "y": 378.66666666666663
+            }
+        },
+        "Map Main Final.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 0.6128348214285714,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 748.1624476415955,
+                "y": 457.70897832817343
+            }
+        },
+        "Map cave.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 0.75,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 278,
+                "y": 181.33333333333331
+            }
+        },
+        "Maptest.tmx": {
+            "scale": 1.5649553571428572,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 159.74896591071172,
+                "y": 112.14377406931963
+            }
+        },
+        "TileSetTest.tsx": {
+            "scaleInDock": 1
+        },
+        "Tree3.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Tree4.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "grille.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "grille2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "laboratoire.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.5
+        }
+    },
+    "openFiles": [
+        "Map cave.tmx",
+        "Map Laboratoire.tmx",
+        "Main 2.tmx",
+        "Cave.tsx",
+        "Labo.tsx",
+        "Attack zone.tsx",
+        "Background.tsx",
+        "Attack_2.tsx",
+        "Car.tsx"
+    ],
+    "project": "Laboratoire Main 1.tiled-project",
+    "recentFiles": [
+        "Map Laboratoire.tmx",
+        "Car.tsx",
+        "Attack_2.tsx",
+        "Background.tsx",
+        "Attack zone.tsx",
+        "Labo.tsx",
+        "Cave.tsx",
+        "Main 2.tmx",
+        "Map cave.tmx",
+        "Maptest.tmx",
+        "grille.tsx",
+        "Tree3.tsx"
+    ]
+}
