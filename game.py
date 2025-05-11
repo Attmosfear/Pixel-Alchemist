@@ -21,8 +21,7 @@ class Game:
         self.running = True
         self.clock = pygame.time.Clock()
 
-        # Nous n'utilisons plus la native_surface avec scaling
-        # à la place, utilisons directement la taille de l'écran pour tout
+
         self.screen_width = WINDOW_WIDTH
         self.screen_height = WINDOW_HEIGHT
 

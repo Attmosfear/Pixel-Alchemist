@@ -1,4 +1,6 @@
 import pygame
+import pytmx
+import pyscroll
 import math
 import random
 from Phase2.enemy import EnemyManager
@@ -43,16 +45,39 @@ class DefenseGame:
         self.wave_timer = 0
         self.wave_duration = 60  # Durée d'une vague en secondes
 
-        # Chargement des images
+        # Charger le background TMX pour la phase de défense
         try:
-            self.background = pygame.image.load('Assets/Art/Backgrounds/defense_bg.png').convert()
-        except FileNotFoundError:
-            # Image par défaut si l'image n'existe pas
-            self.background = pygame.Surface((800, 600))
-            self.background.fill((100, 150, 255))  # Fond bleu ciel
+            # Assurez-vous que le chemin est correct selon votre structure de dossiers
+            self.tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Main 2/Main 2.tmx")
+            map_data = pyscroll.data.TiledMapData(self.tmx_data)
 
-            # Sol
-            pygame.draw.rect(self.background, (100, 70, 0), (0, 550, 800, 50))
+            # Créer le renderer pour afficher la carte TMX
+            self.map_layer = pyscroll.orthographic.BufferedRenderer(map_data, (800, 600))
+
+            # Créer un groupe pour dessiner la carte
+            self.group = pyscroll.PyscrollGroup(map_layer=self.map_layer, default_layer=1)
+
+            # Message de succès
+            print("Background TMX chargé avec succès pour la phase de défense!")
+
+            # Utiliser le background TMX au lieu de l'image statique
+            self.use_tmx_background = True
+        except Exception as e:
+            # En cas d'erreur, utiliser le background par défaut
+            print(f"Erreur lors du chargement du background TMX: {e}")
+            print("Utilisation du background par défaut")
+            self.use_tmx_background = False
+
+            # Charger le background par défaut comme auparavant
+            try:
+                self.background = pygame.image.load('Assets/Art/Backgrounds/defense_bg.png').convert()
+            except FileNotFoundError:
+                # Image par défaut si l'image n'existe pas
+                self.background = pygame.Surface((800, 600))
+                self.background.fill((100, 150, 255))  # Fond bleu ciel
+
+                # Sol
+                pygame.draw.rect(self.background, (100, 70, 0), (0, 550, 800, 50))
 
     def handle_events(self):
         """Gère les événements clavier/souris"""
@@ -186,10 +211,16 @@ class DefenseGame:
     def draw(self):
         """Affiche tous les éléments du jeu"""
         # Dessiner le fond
-        self.screen.blit(self.background, (0, 0))
+        if hasattr(self, 'use_tmx_background') and self.use_tmx_background:
+            # Utiliser le background TMX
+            self.group.draw(self.screen)
+        else:
+            # Utiliser le background statique
+            self.screen.blit(self.background, (0, 0))
 
-        # Dessiner le laboratoire
-        self.laboratory.draw(self.screen)
+        # Dessiner le laboratoire (seulement si on n'utilise pas le TMX, car il est déjà dans le TMX)
+        if not hasattr(self, 'use_tmx_background') or not self.use_tmx_background:
+            self.laboratory.draw(self.screen)
 
         # Dessiner les effets visuels (derrière les ennemis)
         self.effect_manager.draw(self.screen)

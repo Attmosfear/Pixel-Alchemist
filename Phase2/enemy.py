@@ -161,14 +161,16 @@ class EnemyManager:
         # Décider si l'ennemi vole ou est au sol
         flying = random.random() > 0.7  # 30% de chance d'avoir un ennemi volant
 
-        # Position de départ (pour l'instant, toujours à droite de l'écran)
+        # Position de départ (toujours à droite de l'écran)
         x = self.screen_width + 50
 
-        # La hauteur dépend du type d'ennemi
+        # La hauteur dépend du type d'ennemi et du TMX background
         if flying:
-            y = random.randint(50, self.screen_height // 2 - 50)
+            # Les ennemis volants apparaissent en hauteur
+            y = random.randint(100, 300)  # Ajustez ces valeurs selon votre TMX
         else:
-            y = self.screen_height - 80  # Au niveau du sol
+            # Les ennemis au sol apparaissent au niveau du sol
+            y = 520  # Ajustez cette valeur selon la position du sol dans votre TMX
 
         # Paramètres de l'ennemi en fonction de la difficulté
         speed = 0.5 + (0.2 * self.difficulty)
