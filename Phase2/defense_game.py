@@ -7,6 +7,7 @@ from Phase2.enemy import EnemyManager
 from Phase2.launcher import Launcher
 from Phase2.laboratory import Laboratory
 from Phase2.effects import EffectManager
+from constants import *
 
 
 class DefenseGame:
@@ -20,14 +21,64 @@ class DefenseGame:
         # Récupération des potions créées dans la phase 1
         self.available_potions = list(potions)
 
-        # Laboratoire
-        self.laboratory = Laboratory(50, 400)
+        # Charger le background TMX pour la phase de défense
+        try:
+            # Assurez-vous que le chemin est correct selon votre structure de dossiers
+            self.tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Main 2.tmx")
+            map_data = pyscroll.data.TiledMapData(self.tmx_data)
 
-        # Lanceur de potions
-        self.launcher = Launcher(100, 500)
+            # Créer le renderer pour afficher la carte TMX
+            self.map_layer = pyscroll.orthographic.BufferedRenderer(map_data, (800, 600))
 
-        # Gestionnaire d'ennemis
-        self.enemy_manager = EnemyManager(800, 600)
+            # Créer un groupe pour dessiner la carte
+            self.group = pyscroll.PyscrollGroup(map_layer=self.map_layer, default_layer=1)
+
+            # Message de succès
+            print("Background TMX chargé avec succès pour la phase de défense!")
+
+            # Utiliser le background TMX au lieu de l'image statique
+            self.use_tmx_background = True
+
+            # Définir une hauteur de sol fixe à 448-128 = 320 pixels (128 pixels du bas de l'écran)
+            self.floor_level = 320  # Hauteur par défaut du sol
+
+            # Trouver le niveau du sol à partir des tiles
+            for y in range(self.tmx_data.height):
+                for x in range(self.tmx_data.width):
+                    if self.tmx_data.get_tile_gid(x, y, 0) == 4:  # ID du sol (selon votre TMX)
+                        self.floor_level = y * 32  # 32 est la taille de la tile
+                        break
+                if self.floor_level != 550:  # Si on a trouvé le niveau du sol, on sort de la boucle
+                    break
+
+            print(f"Niveau du sol détecté: {self.floor_level}")
+
+        except Exception as e:
+            # En cas d'erreur, utiliser le background par défaut
+            print(f"Erreur lors du chargement du background TMX: {e}")
+            print("Utilisation du background par défaut")
+            self.use_tmx_background = False
+            self.floor_level = 550
+
+            # Charger le background par défaut
+            try:
+                self.background = pygame.image.load('Assets/Art/Backgrounds/defense_bg.png').convert()
+            except FileNotFoundError:
+                # Image par défaut si l'image n'existe pas
+                self.background = pygame.Surface((800, 600))
+                self.background.fill((100, 150, 255))  # Fond bleu ciel
+                # Sol
+                pygame.draw.rect(self.background, (100, 70, 0), (0, 550, 800, 50))
+
+                # Laboratoire - positionné selon le niveau du sol
+        # Laboratoire - positionné à une position fixe
+        self.laboratory = Laboratory(50, 170)  # Placé au-dessus du sol
+
+        # Lanceur de potions - placé près du sol
+        self.launcher = Launcher(100, 300, self.floor_level)  # Près du sol
+
+        # Gestionnaire d'ennemis - avec le bon niveau de sol
+        self.enemy_manager = EnemyManager(WINDOW_WIDTH, WINDOW_HEIGHT, self.floor_level)
 
         # Gestionnaire d'effets visuels
         self.effect_manager = EffectManager()
@@ -48,40 +99,6 @@ class DefenseGame:
         # Gestion du temps
         self.wave_timer = 0
         self.wave_duration = 60  # Durée d'une vague en secondes
-
-        # Charger le background TMX pour la phase de défense
-        try:
-            # Assurez-vous que le chemin est correct selon votre structure de dossiers
-            self.tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Main 2.tmx")
-            map_data = pyscroll.data.TiledMapData(self.tmx_data)
-
-            # Créer le renderer pour afficher la carte TMX
-            self.map_layer = pyscroll.orthographic.BufferedRenderer(map_data, (800, 600))
-
-            # Créer un groupe pour dessiner la carte
-            self.group = pyscroll.PyscrollGroup(map_layer=self.map_layer, default_layer=1)
-
-            # Message de succès
-            print("Background TMX chargé avec succès pour la phase de défense!")
-
-            # Utiliser le background TMX au lieu de l'image statique
-            self.use_tmx_background = True
-        except Exception as e:
-            # En cas d'erreur, utiliser le background par défaut
-            print(f"Erreur lors du chargement du background TMX: {e}")
-            print("Utilisation du background par défaut")
-            self.use_tmx_background = False
-
-            # Charger le background par défaut comme auparavant
-            try:
-                self.background = pygame.image.load('Assets/Art/Backgrounds/defense_bg.png').convert()
-            except FileNotFoundError:
-                # Image par défaut si l'image n'existe pas
-                self.background = pygame.Surface((800, 600))
-                self.background.fill((100, 150, 255))  # Fond bleu ciel
-
-                # Sol
-                pygame.draw.rect(self.background, (100, 70, 0), (0, 550, 800, 50))
 
     def handle_events(self):
         """Gère les événements clavier/souris"""
@@ -206,7 +223,11 @@ class DefenseGame:
         """Affiche tous les éléments du jeu"""
         # Dessiner le fond
         if hasattr(self, 'use_tmx_background') and self.use_tmx_background:
-            # Utiliser le background TMX
+            # Utiliser le background TMX en s'assurant qu'il s'affiche correctement
+            # Effacer l'écran d'abord pour éviter les artéfacts
+            self.screen.fill((0, 0, 0))
+
+            # Dessiner la carte TMX sans la déplacer
             self.group.draw(self.screen)
         else:
             # Utiliser le background statique

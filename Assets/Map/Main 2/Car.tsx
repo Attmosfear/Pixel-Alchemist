@@ -11,13 +11,13 @@
   <image source="Barrel3.png" width="27" height="18"/>
  </tile>
  <tile id="3">
-  <image source="../../../Tile sett/craftpix-net-995156-ghetto-tileset-pixel-art/3 Objects/Box2.png"/>
+  <image source="ghetto-tileset-pixel-art/3 Objects/Box2.png" width="26" height="20"/>
  </tile>
  <tile id="4">
   <image source="Box3.png" width="26" height="19"/>
  </tile>
  <tile id="5">
-  <image source="../../../Tile sett/craftpix-net-995156-ghetto-tileset-pixel-art/3 Objects/Box5.png"/>
+  <image source="ghetto-tileset-pixel-art/3 Objects/Box5.png" width="20" height="16"/>
  </tile>
  <tile id="6">
   <image source="Flashlight2.png" width="19" height="96"/>
@@ -32,10 +32,10 @@
   <image source="Grass10.png" width="11" height="9"/>
  </tile>
  <tile id="10">
-  <image source="../../../Tile sett/craftpix-net-995156-ghetto-tileset-pixel-art/3 Objects/Grass3.png"/>
+  <image source="ghetto-tileset-pixel-art/3 Objects/Grass3.png" width="7" height="5"/>
  </tile>
  <tile id="11">
-  <image source="../../../Tile sett/craftpix-net-995156-ghetto-tileset-pixel-art/3 Objects/Grass4.png"/>
+  <image source="ghetto-tileset-pixel-art/3 Objects/Box4.png" width="26" height="14"/>
  </tile>
  <tile id="12">
   <image source="Grass5.png" width="5" height="4"/>
@@ -53,37 +53,37 @@
   <image source="Grass9.png" width="13" height="9"/>
  </tile>
  <tile id="17">
-  <image source="../../../Tile sett/craftpix-net-995156-ghetto-tileset-pixel-art/3 Objects/Grass1.png"/>
+  <image source="ghetto-tileset-pixel-art/3 Objects/Grass1.png" width="3" height="2"/>
  </tile>
  <tile id="18">
-  <image source="../../../Tile sett/craftpix-net-995156-ghetto-tileset-pixel-art/3 Objects/Grass2.png"/>
+  <image source="ghetto-tileset-pixel-art/3 Objects/Grass2.png" width="4" height="4"/>
  </tile>
  <tile id="19">
   <image source="Garbage7.png" width="11" height="19"/>
  </tile>
  <tile id="20">
-  <image source="../../../../Downloads/craftpix-net-846754-free-green-zone-tileset-pixel-art/3 Objects/Fence/7.png"/>
+  <image source="green-zone-tileset-pixel-art/3 Objects/Fence/7.png" width="48" height="64"/>
  </tile>
  <tile id="21">
-  <image source="../../../../Downloads/craftpix-net-846754-free-green-zone-tileset-pixel-art/3 Objects/Fence/6.png"/>
+  <image source="green-zone-tileset-pixel-art/3 Objects/Fence/6.png" width="48" height="64"/>
  </tile>
  <tile id="22">
-  <image source="../../../../Downloads/craftpix-net-846754-free-green-zone-tileset-pixel-art/3 Objects/Fence/1.png"/>
+  <image source="ghetto-tileset-pixel-art/3 Objects/Box1.png" width="32" height="28"/>
  </tile>
  <tile id="23">
   <image source="Tree4.png" width="175" height="190"/>
  </tile>
  <tile id="24">
-  <image source="../../../../Downloads/craftpix-net-846754-free-green-zone-tileset-pixel-art/3 Objects/Other/Ramp1.png"/>
+  <image source="green-zone-tileset-pixel-art/3 Objects/Other/Ramp1.png" width="92" height="48"/>
  </tile>
  <tile id="25">
-  <image source="../../../../Downloads/craftpix-net-846754-free-green-zone-tileset-pixel-art/3 Objects/Other/Ramp2.png"/>
+  <image source="green-zone-tileset-pixel-art/3 Objects/Other/Ramp2.png" width="92" height="48"/>
  </tile>
  <tile id="26">
-  <image source="../../../../Downloads/craftpix-net-846754-free-green-zone-tileset-pixel-art/3 Objects/Other/Rapm3.png"/>
+  <image source="green-zone-tileset-pixel-art/3 Objects/Other/Rapm3.png" width="144" height="39"/>
  </tile>
  <tile id="27">
-  <image source="../../../../Downloads/craftpix-net-846754-free-green-zone-tileset-pixel-art/4 Animated objects/Skateboard.png"/>
+  <image source="green-zone-tileset-pixel-art/4 Animated objects/Skateboard.png" width="288" height="32"/>
  </tile>
  <tile id="28">
   <image source="Skateboard1.png" width="26" height="7"/>

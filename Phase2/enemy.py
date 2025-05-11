@@ -6,11 +6,12 @@ import math
 class Enemy(pygame.sprite.Sprite):
     """Classe représentant un ennemi dans la phase de défense"""
 
-    def __init__(self, x, y, speed=1, health=100, flying=False):
+    def __init__(self, x, y, speed=1, health=100, flying=False, floor_level=550):
         super().__init__()
 
         # Type d'ennemi (pour l'instant un seul type, mais préparé pour l'extension)
         self.flying = flying
+        self.floor_level = floor_level
 
         # Chargement de l'image
         try:
@@ -138,10 +139,11 @@ class Enemy(pygame.sprite.Sprite):
 class EnemyManager:
     """Gestionnaire des ennemis pour la phase de défense"""
 
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, floor_level=550):
         self.enemies = pygame.sprite.Group()
         self.screen_width = screen_width
         self.screen_height = screen_height
+        self.floor_level = floor_level
 
         # Paramètres de spawn
         self.spawn_timer = 0
@@ -164,20 +166,20 @@ class EnemyManager:
         # Position de départ (toujours à droite de l'écran)
         x = self.screen_width + 50
 
-        # La hauteur dépend du type d'ennemi et du TMX background
+        # La hauteur dépend du type d'ennemi
         if flying:
             # Les ennemis volants apparaissent en hauteur
-            y = random.randint(100, 300)  # Ajustez ces valeurs selon votre TMX
+            y = random.randint(100, 280)  # Au-dessus du sol
         else:
             # Les ennemis au sol apparaissent au niveau du sol
-            y = 520  # Ajustez cette valeur selon la position du sol dans votre TMX
+            y = self.floor_level - 30  # 30 pixels au-dessus du sol
 
         # Paramètres de l'ennemi en fonction de la difficulté
         speed = 0.5 + (0.2 * self.difficulty)
         health = 80 + (20 * self.difficulty)
 
         # Créer et ajouter l'ennemi
-        enemy = Enemy(x, y, speed, health, flying)
+        enemy = Enemy(x, y, speed, health, flying, self.floor_level)
         self.enemies.add(enemy)
         self.enemies_spawned += 1
 
