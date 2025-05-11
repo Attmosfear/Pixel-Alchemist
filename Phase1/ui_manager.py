@@ -54,11 +54,12 @@ class UIManager:
         """
         self.temp_messages.append((message, duration))
 
-    def draw_player_info(self, screen, player):
+    def draw_player_info(self, screen, player, player_inventory=[]):
         """
-        Dessine les informations du joueur (niveau, XP)
+        Dessine les informations du joueur (niveau, XP) et son inventaire
         :param screen: Surface d'affichage
         :param player: Objet joueur
+        :param player_inventory: Liste des objets dans l'inventaire du joueur
         """
         # Fond semi-transparent
         info_surface = pygame.Surface((200, 80), pygame.SRCALPHA)
@@ -80,6 +81,76 @@ class UIManager:
 
         # Affichage sur l'écran
         screen.blit(info_surface, (10, 10))
+
+        # Afficher l'inventaire du joueur
+        if player_inventory:
+            self.draw_inventory(screen, player_inventory)
+
+    def draw_inventory(self, screen, player_inventory):
+        """
+        Dessine l'inventaire du joueur
+        :param screen: Surface d'affichage
+        :param player_inventory: Liste des objets dans l'inventaire du joueur
+        """
+        # Position et taille du panel d'inventaire
+        panel_width = 280
+        panel_height = 60
+        panel_x = 10
+        panel_y = 100
+
+        # Créer une surface semi-transparente pour le panel
+        inventory_surface = pygame.Surface((panel_width, panel_height), pygame.SRCALPHA)
+        inventory_surface.fill((0, 0, 0, 160))
+
+        # Titre
+        title_text = self.font.render("Inventaire:", True, self.WHITE)
+        inventory_surface.blit(title_text, (10, 5))
+
+        # Afficher les objets de l'inventaire
+        item_size = 32
+        item_spacing = 5
+        item_y = 25
+
+        for i, item in enumerate(player_inventory):
+            # Limiter à 6 objets par ligne pour éviter les débordements
+            if i >= 6:
+                break
+
+            item_x = 10 + i * (item_size + item_spacing)
+
+            # Dessiner un fond pour l'objet
+            pygame.draw.rect(inventory_surface, (100, 100, 100),
+                             (item_x, item_y, item_size, item_size))
+
+            # Essayer d'afficher l'image de l'objet
+            try:
+                if hasattr(item, 'image'):
+                    # Redimensionner l'image si nécessaire
+                    item_img = item.image
+                    if item_img.get_width() != item_size or item_img.get_height() != item_size:
+                        item_img = pygame.transform.scale(item_img, (item_size, item_size))
+                    inventory_surface.blit(item_img, (item_x, item_y))
+            except (AttributeError, pygame.error):
+                # Fallback si pas d'image : dessiner un rectangle coloré
+                if isinstance(item, Potion):
+                    if item.category == "Attaque":
+                        color = (255, 0, 0)  # Rouge
+                    elif item.category == "Défense":
+                        color = (0, 0, 255)  # Bleu
+                    else:
+                        color = (0, 255, 0)  # Vert
+                else:
+                    color = (200, 200, 0)  # Jaune par défaut
+
+                pygame.draw.rect(inventory_surface, color,
+                                 (item_x + 4, item_y + 4, item_size - 8, item_size - 8))
+
+        # Afficher le nombre total d'objets dans l'inventaire
+        count_text = self.font.render(f"{len(player_inventory)}", True, self.WHITE)
+        inventory_surface.blit(count_text, (panel_width - 30, 5))
+
+        # Afficher sur l'écran
+        screen.blit(inventory_surface, (panel_x, panel_y))
 
     def draw_inventory(self, screen, player):
         """

@@ -21,7 +21,6 @@ class Game:
         self.running = True
         self.clock = pygame.time.Clock()
 
-
         self.screen_width = WINDOW_WIDTH
         self.screen_height = WINDOW_HEIGHT
 
@@ -52,6 +51,20 @@ class Game:
         self.maps = {}
         self.current_map_name = "laboratoire"  # Carte par défaut
 
+        # Dictionnaire pour stocker les éléments par carte
+        self.map_elements = {
+            "laboratoire": {
+                "elements": pygame.sprite.LayeredUpdates(),
+                "potions": pygame.sprite.LayeredUpdates(),
+                "enhancement_stones": pygame.sprite.LayeredUpdates()
+            },
+            "cave": {
+                "elements": pygame.sprite.LayeredUpdates(),
+                "potions": pygame.sprite.LayeredUpdates(),
+                "enhancement_stones": pygame.sprite.LayeredUpdates()
+            }
+        }
+
         # Charger les deux cartes
         self.load_map("laboratoire", "Assets/Map/Main 1/Map Laboratoire.tmx")
         self.load_map("cave", "Assets/Map/Main 1/Map Cave.tmx")
@@ -70,12 +83,6 @@ class Game:
 
         # Activer la carte courante
         self.setup_active_map()
-
-        # Groupes pour les sprites
-        # Utiliser LayeredUpdates pour permettre un contrôle précis de l'ordre de dessin
-        self.elements = pygame.sprite.LayeredUpdates()
-        self.potions = pygame.sprite.LayeredUpdates()
-        self.enhancement_stones = pygame.sprite.LayeredUpdates()
 
         # État des zones de crafting de potions
         self.potion_craft_state = {
@@ -101,6 +108,10 @@ class Game:
         self.just_teleported = False
         self.teleport_cooldown = 0.5  # en secondes
         self.teleport_timer = 0
+
+        # Inventaire du joueur (pour stocker des potions)
+        self.player_inventory = []
+        self.max_inventory_size = 10
 
         # Afficher un message de bienvenue
         self.ui.show_message("Bienvenue dans Pixel Alchemist ! Préparez vos potions !", 5.0)
@@ -266,7 +277,7 @@ class Game:
         self.walls = current_map["walls"]
         self.zones = current_map["zones"]
         self.craft_zones = current_map["craft_zones"]
-        self.end_craft_zones = current_map["end_craft_zones"]  # Nouvelle propriété
+        self.end_craft_zones = current_map["end_craft_zones"]
         self.drop_zones = current_map["drop_zones"]
         self.potioncraft_zones = current_map["potioncraft_zones"]
         self.creation_zones = current_map["creation_zones"]
@@ -276,6 +287,26 @@ class Game:
 
         # Configurer le groupe de dessin
         self.group = current_map["group"]
+
+        # Stocker les éléments en fonction de la carte active
+        if not hasattr(self, 'map_elements'):
+            self.map_elements = {
+                "laboratoire": {
+                    "elements": pygame.sprite.LayeredUpdates(),
+                    "potions": pygame.sprite.LayeredUpdates(),
+                    "enhancement_stones": pygame.sprite.LayeredUpdates()
+                },
+                "cave": {
+                    "elements": pygame.sprite.LayeredUpdates(),
+                    "potions": pygame.sprite.LayeredUpdates(),
+                    "enhancement_stones": pygame.sprite.LayeredUpdates()
+                }
+            }
+
+        # Mettre à jour les groupes de sprites avec ceux de la carte active
+        self.elements = self.map_elements[self.current_map_name]["elements"]
+        self.potions = self.map_elements[self.current_map_name]["potions"]
+        self.enhancement_stones = self.map_elements[self.current_map_name]["enhancement_stones"]
 
     def change_map(self, target_map, transition_type):
         """Change la carte active et place le joueur au bon endroit"""
@@ -573,14 +604,13 @@ class Game:
         self.auto_craft_manager.check_for_crafting()  # Vérifier s'il y a des éléments à crafter
         self.auto_craft_manager.update(dt)  # Mettre à jour le timer de crafting
 
-        # Gérer le timer de crafting de potion
         if self.crafting_in_progress:
             self.crafting_timer += dt
             self.crafting_animation_frame = (self.crafting_animation_frame + 1) % 30  # Pour une animation simple
 
-            # Vérifier si le joueur est toujours devant la zone de résultat
+            # Vérifier si le joueur est toujours devant la zone de mixage
             front_zone = get_front_tile(self.player, self.zones)
-            if not front_zone or front_zone.type != "potioncraft_zone" or front_zone.id != 37:
+            if not front_zone or front_zone.type != "potioncraft_zone" or front_zone.id != 35:
                 # Le joueur n'est plus devant la zone, annuler le crafting
                 self.crafting_in_progress = False
                 self.crafting_timer = 0
@@ -588,15 +618,16 @@ class Game:
                 self.ui.show_message("Mélange interrompu! Vous avez quitté la zone.", 1.0)
                 return
 
-            # Vérifier si la touche E est toujours enfoncée
-            keys = pygame.key.get_pressed()
-            if not keys[pygame.K_e]:
-                # La touche E n'est plus enfoncée, annuler le crafting
+            # Vérifier si le temps requis est écoulé
+            if self.crafting_timer >= self.crafting_time_required:
                 self.crafting_in_progress = False
                 self.crafting_timer = 0
                 self.animation_manager.remove_animation("potion_mixing")
-                self.ui.show_message("Mélange interrompu! Vous avez relâché la touche E.", 1.0)
-                return
+                success = self.create_potion_for_inventory()
+                if success:
+                    self.ui.show_message("Potion créée et ajoutée à votre inventaire!", 3.0)
+                else:
+                    self.ui.show_message("Impossible de créer une potion...", 3.0)
 
             # Vérifier si le temps requis est écoulé
             if self.crafting_timer >= self.crafting_time_required:
@@ -644,7 +675,6 @@ class Game:
         # Sauvegarder la position actuelle du joueur
         self.player.save_location()
 
-        # NOUVELLE APPROCHE DE COLLISION: traiter séparément les déplacements et vérifier les collisions à chaque étape
 
         # Déplacement horizontal
         if self.player.velocity[0] != 0:
@@ -808,8 +838,8 @@ class Game:
         # Dessiner les animations
         self.animation_manager.draw(self.screen)
 
-        # Dessiner l'interface utilisateur
-        self.ui.draw_player_info(self.screen, self.player)
+        # Dessiner l'interface utilisateur avec l'inventaire
+        self.ui.draw_player_info(self.screen, self.player, self.player_inventory)
 
         # Afficher les infobulles
         mouse_pos = pygame.mouse.get_pos()
@@ -830,6 +860,12 @@ class Game:
         map_text = f"Carte: {self.current_map_name.capitalize()}"
         map_surface = timer_font.render(map_text, True, (255, 255, 255))
         self.screen.blit(map_surface, (10, self.screen_height - map_surface.get_height() - 10))
+
+        # Afficher les contrôles de base
+        controls_text = "E: Interagir | C: Mélanger | F1: Debug | H: Aide"
+        controls_surface = timer_font.render(controls_text, True, (200, 200, 200))
+        self.screen.blit(controls_surface,
+                         (self.screen_width - controls_surface.get_width() - 10, self.screen_height - 30))
 
         # DEBUG: Afficher la position du joueur et des éléments transportés
         if self.player.held_item and self.debug_collision:
@@ -961,6 +997,61 @@ class Game:
 
         # Marquer la zone de résultat comme occupée
         result_zone.have_object = True
+
+        # Donner de l'XP au joueur
+        self.player.craft_success(new_potion.category)
+
+        print(f"Création réussie d'une potion {new_potion.name} !")
+        return True
+
+    def create_potion_for_inventory(self):
+        """Crée une potion et l'ajoute directement à l'inventaire du joueur"""
+        if not self.potion_craft_state["element"]:
+            print("Pas d'élément principal pour la potion")
+            return False
+
+        # Récupérer le nom de l'élément principal
+        element_name = self.potion_craft_state["element"].name
+        print(f"DEBUG: Tentative de craft avec l'élément {element_name}")
+
+        # Chercher une potion correspondante
+        matching_potion = None
+        for potion_data in self.potions_data:
+            if element_name in potion_data["ingredients"]:
+                matching_potion = potion_data
+                print(f"DEBUG: Potion trouvée: {potion_data['name']}")
+                break
+
+        if not matching_potion:
+            print(f"Pas de potion possible avec l'élément {element_name}")
+            return False
+
+        # Créer la potion (position temporaire)
+        new_potion = Potion(0, 0, matching_potion, element_name)
+
+        # Appliquer les améliorations des pierres
+        if self.potion_craft_state["stone1"]:
+            new_potion.apply_enhancement(self.potion_craft_state["stone1"].stone_type)
+            self.enhancement_stones.remove(self.potion_craft_state["stone1"])
+            self.potion_craft_state["stone1"] = None
+
+        if self.potion_craft_state["stone2"]:
+            new_potion.apply_enhancement(self.potion_craft_state["stone2"].stone_type)
+            self.enhancement_stones.remove(self.potion_craft_state["stone2"])
+            self.potion_craft_state["stone2"] = None
+
+        # Supprimer l'élément utilisé
+        self.elements.remove(self.potion_craft_state["element"])
+        self.potion_craft_state["element"] = None
+
+        # Ajouter la potion à l'inventaire du joueur
+        if len(self.player_inventory) < self.max_inventory_size:
+            self.player_inventory.append(new_potion)
+        else:
+            # Si l'inventaire est plein, ajouter la potion au groupe des potions pour qu'elle soit visible
+            new_potion.rect.topleft = (random.randint(100, 400), random.randint(100, 300))
+            self.potions.add(new_potion)
+            self.ui.show_message("Inventaire plein ! La potion a été déposée par terre.", 2.0)
 
         # Donner de l'XP au joueur
         self.player.craft_success(new_potion.category)
