@@ -9,6 +9,7 @@ from Phase1.potions import Potion
 from Phase1.enhancement_stones import EnhancementStone
 from Phase1.ui_manager import UIManager
 from constants import *
+from Phase2.defense_game import DefenseGame
 import pygame
 import pyscroll
 import pytmx
@@ -53,8 +54,8 @@ class Game:
         self.current_map_name = "laboratoire"  # Carte par défaut
 
         # Charger les deux cartes
-        self.load_map("laboratoire", "Assets/Map/Map Laboratoire.tmx")
-        self.load_map("cave", "Assets/Map/Map Cave.tmx")
+        self.load_map("laboratoire", "Assets/Map/Main 1/Map Laboratoire.tmx")
+        self.load_map("cave", "Assets/Map/Main 1/Map Cave.tmx")
 
         # Points de spawn seront détectés depuis les cartes TMX
         self.spawn_points = {
@@ -186,8 +187,10 @@ class Game:
         drop_zones = []
         potioncraft_zones = []
         creation_zones = []
-        trap_zones = []  # Nouvelles zones pour les pièges/trappes
-        end_craft_zones = []  # Zones pour les résultats de craft
+        trap_zones = []
+        end_craft_zones = []
+        quest_zones = []
+        map_zones = []
 
         for obj in tmx_data.objects:
             if obj.type == "collision":
@@ -205,7 +208,8 @@ class Game:
                 walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
                 potioncraft_zones.append(Zone(obj.x, obj.y, obj.id, obj.type))
             if obj.type == "zone_creation":
-                walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                if obj.name != "Terre":
+                    walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
                 # Créer une zone de création avec son nom (Feu, Eau, Terre, Air)
                 zone = Zone(obj.x, obj.y, obj.id, obj.type)
                 zone.name = obj.name  # Ajouter le nom de l'élément à créer
@@ -214,6 +218,19 @@ class Game:
                 # Zones pour la transition entre cartes
                 trap_zone = Zone(obj.x, obj.y, obj.id, obj.type)
                 trap_zones.append(trap_zone)
+            if obj.type == "quest_zone":
+                walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                quest_zone = Zone(obj.x, obj.y, obj.id, obj.type)
+                if hasattr(obj, 'name'):
+                    quest_zone.name = obj.name
+                quest_zones.append(quest_zone)
+            if obj.type == "map_zone":
+                walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                map_zone = Zone(obj.x, obj.y, obj.id, obj.type)
+                # Si la zone a un nom, l'ajouter
+                if hasattr(obj, 'name'):
+                    map_zone.name = obj.name
+                map_zones.append(map_zone)
 
         # Ajout des bords de l'écran comme des collisions
         walls.append(pygame.Rect(-5, 0, 5, self.screen_height))
@@ -222,7 +239,7 @@ class Game:
         walls.append(pygame.Rect(0, self.screen_height, self.screen_width, 5))
 
         # Regrouper toutes les zones pour la détection
-        zones = craft_zones + drop_zones + potioncraft_zones + creation_zones + trap_zones + end_craft_zones
+        zones = craft_zones + drop_zones + potioncraft_zones + creation_zones + trap_zones + end_craft_zones + quest_zones + map_zones
 
         # Stocker toutes les informations de la carte
         self.maps[map_name] = {
@@ -237,7 +254,9 @@ class Game:
             "drop_zones": drop_zones,
             "potioncraft_zones": potioncraft_zones,
             "creation_zones": creation_zones,
-            "trap_zones": trap_zones
+            "trap_zones": trap_zones,
+            "quest_zones": quest_zones,
+            "map_zones": map_zones
         }
 
     def setup_active_map(self):
@@ -253,6 +272,8 @@ class Game:
         self.potioncraft_zones = current_map["potioncraft_zones"]
         self.creation_zones = current_map["creation_zones"]
         self.trap_zones = current_map["trap_zones"]
+        self.quest_zones = current_map["quest_zones"]
+        self.map_zones = current_map["map_zones"]
 
         # Configurer le groupe de dessin
         self.group = current_map["group"]
@@ -319,6 +340,12 @@ class Game:
                     # Vérifier s'il y a une zone devant le joueur
                     front_zone = get_front_tile(self.player, self.zones)
                     if front_zone:
+                        if front_zone.type == "map_zone":
+                            # Afficher un message clair indiquant le lancement de la phase 2
+                            self.ui.show_message("Lancement de la phase de défense du laboratoire!", 2.0)
+                            # Lancer la phase de défense
+                            self.start_defense_phase()
+                            continue
                         # Si on est devant une trappe ou une échelle, changer de carte
                         if front_zone.type == "trap_zone":
                             # Transition du laboratoire vers la cave
@@ -378,6 +405,13 @@ class Game:
                                         else:
                                             msg = "Objet récupéré de la zone de résultat!"
                                         self.ui.show_message(msg)
+                        elif front_zone.type == "quest_zone":
+                            # Logique pour les zones de quête
+                            quest_name = front_zone.name if hasattr(front_zone, 'name') else "inconnue"
+                            self.ui.show_message(
+                                f"Zone de quête '{quest_name}' ! Des missions seront bientôt disponibles.", 3.0)
+                            continue
+
 
                         # Si on tient un objet, essayer de le déposer
                         if self.player.held_item:
@@ -464,6 +498,16 @@ class Game:
                         self.show_help = False
                     else:
                         self.running = False
+
+                elif event.key == pygame.K_F3:  # F3 pour afficher les informations sur les zones map_zone
+                    self.print_map_zones()
+                    self.ui.show_message("Informations sur les zones map_zone affichées dans la console", 2.0)
+                    continue
+
+                elif event.key == pygame.K_F5:  # Utiliser F5 comme raccourci pour lancer la phase 2
+                    self.ui.show_message("Lancement direct de la phase de défense!", 2.0)
+                    self.start_defense_phase()
+                    continue
 
 
 
@@ -1009,6 +1053,8 @@ class Game:
                 color = (0, 255, 255, 128)  # Cyan pour les zones de création
             elif zone.type in ["trap_zone", "ladder_zone"]:
                 color = (255, 128, 0, 128)  # Orange pour les zones de transition
+            elif zone.type == "quest_zone":
+                color = (75, 0, 130, 128)   # Indigo pour les zones de quête
             else:
                 color = (128, 128, 128, 128)  # Gris pour les autres zones
 
@@ -1022,6 +1068,52 @@ class Game:
                     text += " ✓"
                 text_surface = font.render(text, True, (255, 255, 255))
                 self.screen.blit(text_surface, (zone.rect.x + 2, zone.rect.y + 2))
+
+    def start_defense_phase(self):
+        """Démarre la phase de défense (phase 2) manuellement"""
+        # Sauvegarder l'état actuel du jeu si nécessaire
+        current_screen = self.screen.copy()
+
+        # Créer une instance de DefenseGame avec toutes les potions disponibles
+        defense_game = DefenseGame(self.screen, self.player, self.potions)
+
+        # Afficher un message de transition
+        self.ui.show_message("Préparation de la défense du laboratoire...", 2.0)
+        self.display()  # Mettre à jour l'affichage pour voir le message
+        pygame.time.delay(2000)  # Attendre 2 secondes pour la transition
+
+        # Lancer la phase de défense
+        defense_score, defense_wave = defense_game.run()
+
+        # Donner de l'expérience au joueur en fonction du score
+        self.player.gain_experience(defense_score // 10)
+
+        # Afficher les résultats après la défense
+        self.ui.show_message(f"Défense terminée ! Score: {defense_score}, Vagues: {defense_wave}", 3.0)
+
+        # Rétablir l'affichage de la phase 1
+        self.screen.blit(current_screen, (0, 0))
+        self.display()  # Mettre à jour l'affichage une fois de plus
+
+    def print_map_zones(self):
+        """Affiche toutes les zones map_zone disponibles dans chaque carte"""
+        print("\n=== ZONES MAP_ZONE DÉTECTÉES ===")
+
+        for map_name, map_data in self.maps.items():
+            print(f"\n--- Carte: {map_name} ---")
+
+            # Vérifier si map_zones existe dans le dictionnaire
+            if "map_zones" in map_data:
+                map_zones = map_data["map_zones"]
+                if map_zones:
+                    print(f"Nombre de zones map_zone: {len(map_zones)}")
+                    for i, zone in enumerate(map_zones):
+                        zone_name = getattr(zone, 'name', 'Sans nom')
+                        print(f"  {i + 1}. ID: {zone.id}, Position: ({zone.rect.x}, {zone.rect.y}), Nom: {zone_name}")
+                else:
+                    print("Aucune zone map_zone trouvée dans cette carte.")
+            else:
+                print("La clé 'map_zones' n'existe pas dans les données de cette carte.")
 
     def run(self):
         while self.running:

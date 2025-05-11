@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="45">
- <tileset firstgid="1" source="Labo.tsx"/>
- <tileset firstgid="736" source="Cave.tsx"/>
+ <tileset firstgid="1" source="Laboratoire/Labo.tsx"/>
+ <tileset firstgid="736" source="Cave/Cave.tsx"/>
  <layer id="1" name="Sol" width="16" height="14">
   <data encoding="csv">
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,

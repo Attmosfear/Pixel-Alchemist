@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="16">
- <tileset firstgid="1" source="Cave.tsx"/>
- <tileset firstgid="599" source="Labo.tsx"/>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="16">
+ <tileset firstgid="1" source="Cave/Cave.tsx"/>
+ <tileset firstgid="599" source="Laboratoire/Labo.tsx"/>
  <layer id="1" name="Sol" width="16" height="14">
   <data encoding="csv">
 27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
@@ -101,7 +101,7 @@
   <object id="7" type="collision" x="-4" y="-8" width="34.6667" height="450.667"/>
   <object id="8" type="collision" x="22.6667" y="190.667" width="72" height="62.6667"/>
   <object id="9" type="collision" x="97.3333" y="202.667" width="318.667" height="52"/>
-  <object id="10" type="map_zone" x="324" y="181.333" width="56" height="77.3333"/>
+  <object id="10" type="map_zone" x="324.487" y="221.768" width="56" height="33.9753"/>
   <object id="11" type="collision" x="94.6667" y="301.333" width="68" height="42.6667"/>
   <object id="12" type="collision" x="236" y="318.667" width="68" height="64"/>
   <object id="13" type="ladder_zone" x="157.333" y="54.6667" width="37.3333" height="44"/>
