@@ -41,6 +41,10 @@ class DefenseGame:
         self.title_font = pygame.font.SysFont('Arial', 32)
         self.selected_potion_index = 0 if self.available_potions else -1
 
+        # Sélectionner la première potion si disponible
+        if self.available_potions and self.selected_potion_index >= 0:
+            self.launcher.select_potion(self.available_potions[self.selected_potion_index])
+
         # Gestion du temps
         self.wave_timer = 0
         self.wave_duration = 60  # Durée d'une vague en secondes
@@ -48,7 +52,7 @@ class DefenseGame:
         # Charger le background TMX pour la phase de défense
         try:
             # Assurez-vous que le chemin est correct selon votre structure de dossiers
-            self.tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Main 2/Main 2.tmx")
+            self.tmx_data = pytmx.util_pygame.load_pygame("Assets/Map/Main 2.tmx")
             map_data = pyscroll.data.TiledMapData(self.tmx_data)
 
             # Créer le renderer pour afficher la carte TMX
@@ -89,7 +93,7 @@ class DefenseGame:
                 if event.key == pygame.K_ESCAPE:
                     return False
 
-                # Changer la potion sélectionnée
+                # Changer la potion sélectionnée (avec les touches)
                 elif event.key == pygame.K_LEFT:
                     if self.available_potions:
                         self.selected_potion_index = (self.selected_potion_index - 1) % len(self.available_potions)
@@ -100,32 +104,14 @@ class DefenseGame:
                         self.selected_potion_index = (self.selected_potion_index + 1) % len(self.available_potions)
                         self.launcher.select_potion(self.available_potions[self.selected_potion_index])
 
-                # Ajuster l'angle du lanceur
-                elif event.key == pygame.K_UP:
-                    self.launcher.set_angle(self.launcher.angle + 5)
-
-                elif event.key == pygame.K_DOWN:
-                    self.launcher.set_angle(self.launcher.angle - 5)
-
-                # Ajuster la puissance
-                elif event.key == pygame.K_z:
-                    self.launcher.set_power(self.launcher.power + 1)
-
-                elif event.key == pygame.K_s:
-                    self.launcher.set_power(self.launcher.power - 1)
-
-                # Lancer une potion
+                # Pour les joueurs qui préfèrent le clavier
                 elif event.key == pygame.K_SPACE:
-                    self.launcher.is_aiming = not self.launcher.is_aiming
-
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Clic gauche
-                    if self.launcher.is_aiming:
+                    if not self.launcher.is_aiming:
+                        self.launcher.is_aiming = True
+                    else:
                         # Lancer la potion sélectionnée
                         used_potion = self.launcher.launch()
-
-                        # Si une potion a été lancée, la retirer de la liste des potions disponibles
-                        if used_potion is not None and used_potion in self.available_potions:
+                        if used_potion in self.available_potions:
                             self.available_potions.remove(used_potion)
                             if self.available_potions:
                                 self.selected_potion_index = min(self.selected_potion_index,
@@ -135,24 +121,32 @@ class DefenseGame:
                                 self.selected_potion_index = -1
                                 self.launcher.select_potion(None)
 
-                        self.launcher.is_aiming = False
+            # Gestion des événements de souris
+            elif event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEMOTION):
+                # Déléguer au launcher
+                result = self.launcher.handle_mouse_events(event)
 
-        # Vérifier si la souris est maintenue enfoncée pour viser
-        mouse_pressed = pygame.mouse.get_pressed()
-        if mouse_pressed[0] and self.launcher.is_aiming:
-            # Calculer l'angle en fonction de la position de la souris
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            dx = mouse_x - self.launcher.x
-            dy = self.launcher.y - mouse_y
-
-            # Calculer l'angle en degrés
-            angle = math.atan2(dy, dx)
-            angle_deg = math.degrees(angle)
-
-            # Limiter l'angle entre 0 et 90 degrés
-            angle_deg = max(0, min(90, angle_deg))
-
-            self.launcher.set_angle(angle_deg)
+                # Traiter le résultat
+                if result == "prev_potion":
+                    if self.available_potions:
+                        self.selected_potion_index = (self.selected_potion_index - 1) % len(self.available_potions)
+                        self.launcher.select_potion(self.available_potions[self.selected_potion_index])
+                elif result == "next_potion":
+                    if self.available_potions:
+                        self.selected_potion_index = (self.selected_potion_index + 1) % len(self.available_potions)
+                        self.launcher.select_potion(self.available_potions[self.selected_potion_index])
+                elif result is not None:
+                    # Une potion a été lancée, la retirer de la liste
+                    used_potion = result
+                    if used_potion in self.available_potions:
+                        self.available_potions.remove(used_potion)
+                        if self.available_potions:
+                            self.selected_potion_index = min(self.selected_potion_index,
+                                                             len(self.available_potions) - 1)
+                            self.launcher.select_potion(self.available_potions[self.selected_potion_index])
+                        else:
+                            self.selected_potion_index = -1
+                            self.launcher.select_potion(None)
 
         return True
 
@@ -255,30 +249,43 @@ class DefenseGame:
 
     def draw_available_potions(self):
         """Affiche les potions disponibles en bas de l'écran"""
-        start_x = 50
-        y = 550
-
         # Dessiner un fond pour la sélection de potions
         pygame.draw.rect(self.screen, (50, 50, 50, 180), (0, 530, 800, 70))
 
-        # Texte informatif
+        # Si aucune potion n'est disponible
         if not self.available_potions:
-            info_text = self.font.render("Plus de potions ! Utilisez les pierres (espace)", True, (255, 200, 200))
+            info_text = self.font.render("Plus de potions ! Utilisez les pierres (clic gauche)", True, (255, 200, 200))
             self.screen.blit(info_text, (250, 555))
             return
 
+        # Disposition des potions en barres d'inventaire
+        potion_size = 40
+        spacing = 10
+        start_x = (self.screen.get_width() - (len(self.available_potions) * (potion_size + spacing))) // 2
+        y = 545
+
         # Dessiner chaque potion
         for i, potion in enumerate(self.available_potions):
-            # Cadre de sélection pour la potion active
+            x = start_x + i * (potion_size + spacing)
+
+            # Cadre pour la potion sélectionnée
             if i == self.selected_potion_index:
-                pygame.draw.rect(self.screen, (255, 255, 0), (start_x + i * 60 - 2, y - 2, 44, 44), 2)
+                # Cadre plus visible avec animation légère
+                pulse = (math.sin(pygame.time.get_ticks() * 0.01) * 0.5 + 0.5) * 255
+                highlight_color = (255, 255, pulse)
+                pygame.draw.rect(self.screen, highlight_color, (x - 3, y - 3, potion_size + 6, potion_size + 6), 3)
+
+                # Afficher les détails de la potion sélectionnée en haut du panel
+                selected_text = f"{potion.name} - {potion.effect}"
+                details_text = self.font.render(selected_text, True, (255, 255, 255))
+                self.screen.blit(details_text, (400 - details_text.get_width() // 2, 510))
 
             # Dessiner l'image de la potion
             try:
                 potion_img = potion.image
-                if potion_img.get_width() > 40 or potion_img.get_height() > 40:
-                    potion_img = pygame.transform.scale(potion_img, (40, 40))
-                self.screen.blit(potion_img, (start_x + i * 60, y))
+                if potion_img.get_width() > potion_size or potion_img.get_height() > potion_size:
+                    potion_img = pygame.transform.scale(potion_img, (potion_size, potion_size))
+                self.screen.blit(potion_img, (x, y))
             except (AttributeError, pygame.error):
                 # Dessiner un rectangle de couleur si pas d'image
                 color = (0, 255, 0)  # Vert par défaut
@@ -289,18 +296,12 @@ class DefenseGame:
                         color = (0, 0, 255)  # Bleu pour la défense
                     elif potion.category == "Statut":
                         color = (255, 255, 0)  # Jaune pour le statut
+                pygame.draw.rect(self.screen, color, (x, y, potion_size, potion_size))
 
-                pygame.draw.rect(self.screen, color, (start_x + i * 60, y, 40, 40))
-
-            # Nom de la potion en petit en dessous
-            name_text = self.font.render(potion.name[:8], True, (255, 255, 255))
-            self.screen.blit(name_text, (start_x + i * 60, y + 42))
-
-        # Instructions
+        # Instructions pour l'utilisation de la souris
         instructions = self.font.render(
-            "← → : Changer de potion | ↑↓ : Ajuster angle | Z/S : Puissance | Espace : Viser/Tirer", True,
-            (200, 200, 200))
-        self.screen.blit(instructions, (150, 510))
+            "Molette: Changer de potion | Clic gauche: Viser/Lancer", True, (200, 200, 200))
+        self.screen.blit(instructions, (250, 580))
 
     def draw_game_over(self):
         """Affiche l'écran de fin de partie"""

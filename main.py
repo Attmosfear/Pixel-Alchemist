@@ -1,18 +1,9 @@
-
 import constants
 import pygame
 import os
 
 # Import de notre classe Game mise à jour
 from game import Game
-
-"""Gestion du scaling de l'ecran"""
-# Taille native de la carte
-NATIVE_WIDTH, NATIVE_HEIGHT = 512, 448
-# Taille de la fenetre affichée
-SCALE = 3  # Définir dans les paramètres du jeu ou en fonction de l'écran du joueur
-WINDOW_WIDTH = NATIVE_WIDTH * SCALE
-WINDOW_HEIGHT = NATIVE_HEIGHT * SCALE
 
 
 def main():
@@ -28,6 +19,8 @@ def main():
     # Initialiser Pygame
     pygame.init()
     pygame.display.set_caption("Pixel-Alchemist")
+
+    # Utiliser les dimensions de constants.py
     screen = pygame.display.set_mode((constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT))
 
     # Créer et exécuter le jeu

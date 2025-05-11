@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="24" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="6">
- <tileset firstgid="1" source="Attack zone.tsx"/>
- <tileset firstgid="97" source="Background.tsx"/>
- <tileset firstgid="277" source="Attack_2.tsx"/>
- <tileset firstgid="341" source="Car.tsx"/>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="24" height="14" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="6">
+ <tileset firstgid="1" source="Main 2/Attack zone.tsx"/>
+ <tileset firstgid="97" source="Main 2/Background.tsx"/>
+ <tileset firstgid="277" source="Main 2/Attack_2.tsx"/>
+ <tileset firstgid="341" source="Main 2/Car.tsx"/>
  <layer id="1" name="Sol" width="24" height="14">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
