@@ -11,7 +11,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.get_image(0, 0)
         self.rect = self.image.get_rect()
         self.position = [x, y]
-        self.speed = 2
+        self.speed = 3
         self.velocity = [0, 0]
         self.feet = pygame.Rect(0, 0, self.rect.width * 0.5, 12)
         self.old_position = self.position.copy()
@@ -47,14 +47,6 @@ class Player(pygame.sprite.Sprite):
         image.blit(self.sprite_sheet, (0, 0), (x, y, 16, 16))
         return image
 
-    # Nous n'utilisons plus cette méthode car le déplacement est géré dans Game.update()
-    # def move(self):
-    #     """
-    #     Modifie la position du joueur sur la carte
-    #     :return: Aucun car modification dynamique
-    #     """
-    #     self.position[0] += self.velocity[0] * self.speed
-    #     self.position[1] += self.velocity[1] * self.speed
 
     def move_back(self):
         """
@@ -109,6 +101,20 @@ class Player(pygame.sprite.Sprite):
             if zone.have_object:
                 print("Cette zone contient déjà un objet")
                 return False
+
+            # Vérifier si l'objet est déjà sur une autre case
+            if hasattr(zone, 'game') and zone.game is not None:
+                for existing_zone in zone.game.zones:
+                    if existing_zone != zone and existing_zone.have_object:
+                        # Vérifier si l'élément tenu par le joueur est sur cette zone
+                        element_groups = [zone.game.elements]
+                        for group in element_groups:
+                            for element in group:
+                                if not element.held_by_player and existing_zone.rect.colliderect(
+                                        element.rect) and element == self.held_item:
+                                    # L'élément est déjà sur une autre zone, refuser le dépôt
+                                    print("Cet objet est déjà posé ailleurs")
+                                    return False
 
             self.held_item.held_by_player = False
 

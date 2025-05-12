@@ -9,7 +9,7 @@
         },
         {
             "id": "P002",
-            "name": "Fumée",
+            "name": "Fumee",
             "ingredients": ["Feu", "Air"],
             "effect": "Crée un écran de fumée où les ennemis ont 50% de chance de rater leurs attaques",
             "category": "Défense"
@@ -44,28 +44,28 @@
         },
         {
             "id": "P007",
-            "name": "Piege de roc",
+            "name": "Piege_de_roc",
             "ingredients": ["Terre", "Terre"],
             "effect": "Étourdit un ennemi ciblé pendant 2 secondes",
             "category": "Statut"
         },
         {
             "id": "P008",
-            "name": "Flammes folles",
+            "name": "Flammes_folles",
             "ingredients": ["Feu", "Feu"],
             "effect": "Explosion instable : dégâts aléatoires parfois massifs",
             "category": "Attaque"
         },
         {
             "id": "P009",
-            "name": "Goutte pure",
+            "name": "Goutte_pure",
             "ingredients": ["Eau", "Eau"],
             "effect": "Dissout les protections ennemies et annule les boucliers",
             "category": "Attaque"
         },
         {
             "id": "P010",
-            "name": "Brise légère",
+            "name": "Brise_legere",
             "ingredients": ["Air", "Air"],
             "effect": "Repousse les ennemis et interrompt leur action",
             "category": "Défense"
@@ -79,70 +79,70 @@
         },
         {
             "id": "P012",
-            "name": "Brume brûlante",
+            "name": "Brume_brulante",
             "ingredients": ["Vapeur", "Brouillard"],
             "effect": "Zone brûlante persistante + empêche les soins ennemis",
             "category": "Attaque"
         },
         {
             "id": "P013",
-            "name": "Marécage",
+            "name": "Marecage",
             "ingredients": ["Boue", "Brouillard"],
             "effect": "Flaque qui ralentit, affaiblit et piège les ennemis",
             "category": "Statut"
         },
         {
             "id": "P014",
-            "name": "Nuée ardente",
-            "ingredients": ["Flammes folles", "Poussière"],
+            "name": "Nuee_ardente",
+            "ingredients": ["Flammes_folles", "Poussière"],
             "effect": "Explosion de feu + repousse tous les ennemis autour",
             "category": "Attaque"
         },
         {
             "id": "P015",
-            "name": "Géode",
-            "ingredients": ["Piege de roc", "Goutte pure"],
+            "name": "Geode",
+            "ingredients": ["Piege_de_roc", "Goutte_pure"],
             "effect": "Explosion de fragments tranchants en cône",
             "category": "Attaque"
         },
         {
             "id": "P016",
-            "name": "Tornade sèche",
-            "ingredients": ["Brise légère", "Poussière"],
+            "name": "Tornade_seche",
+            "ingredients": ["Brise_légère", "Poussière"],
             "effect": "Mini-tornade infligeant plusieurs coups en spirale",
             "category": "Attaque"
         },
         {
             "id": "P017",
-            "name": "Enfer embrumé",
-            "ingredients": ["Cendres", "Brume brûlante"],
+            "name": "Enfer_embrume",
+            "ingredients": ["Cendres", "Brume_brûlante"],
             "effect": "Zone infernale : brûlure sur durée + panique ennemie",
             "category": "Attaque"
         },
         {
             "id": "P018",
             "name": "Racine",
-            "ingredients": ["Marécage", "Goutte pure"],
+            "ingredients": ["Marécage", "Goutte_pure"],
             "effect": "Immobilise un grand ennemi ou plusieurs petits",
             "category": "Statut"
         },
         {
             "id": "P019",
-            "name": "Cœur de volcan",
-            "ingredients": ["Lave", "Piege de roc"],
+            "name": "Coeur_de_volcan",
+            "ingredients": ["Lave", "Piege_de_roc"],
             "effect": "Jaillit de lave : éruption violente à gros dégâts",
             "category": "Attaque"
         },
         {
             "id": "P020",
-            "name": "Tempête sauvage",
-            "ingredients": ["Brise légère", "Flammes folles"],
+            "name": "Tempete_sauvage",
+            "ingredients": ["Brise_légère", "Flammes_folles"],
             "effect": "Frappe aléatoire de feu, vent et projectiles",
             "category": "Attaque"
         },
         {
             "id": "P021",
-            "name": "Cristal ancien",
+            "name": "Cristal_ancien",
             "ingredients": ["Géode", "Cendres"],
             "effect": "Gèle un ennemi, explose s'il est re-touché (combo possible)",
             "category": "Statut"

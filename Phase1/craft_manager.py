@@ -73,12 +73,19 @@ class AutoCraftManager:
             print(f"DEBUG: Vérification zone craft {zone.id}, occupée: {zone.have_object}")
             if zone.have_object:
                 # Chercher l'élément sur cette zone
+                element_found = False
                 for element in self.game.elements:
                     if not element.held_by_player and zone.rect.colliderect(element.rect):
                         elements_on_craft.append(element)
                         zones_with_elements.append(zone)
                         print(f"DEBUG: Élément {element.name} trouvé sur zone {zone.id}")
+                        element_found = True
                         break
+
+                # Si aucun élément n'est trouvé mais la zone est marquée comme occupée, corriger l'état
+                if not element_found:
+                    print(f"DEBUG: Zone {zone.id} marquée comme occupée mais aucun élément trouvé. Correction...")
+                    zone.have_object = False
 
         # S'il y a exactement 2 éléments, lancer le crafting automatique
         if len(elements_on_craft) == 2:
@@ -91,7 +98,20 @@ class AutoCraftManager:
             self.craft_center = (craft_center_x, craft_center_y)
 
             # Vérifier si la zone de résultat est libre
-            if not self.game.end_craft_zones or not any(zone.have_object for zone in self.game.end_craft_zones):
+            result_zone_free = True
+            if self.game.end_craft_zones:
+                for result_zone in self.game.end_craft_zones:
+                    # Vérifier si des objets sont présents sur la zone de résultat
+                    objects = []
+                    for element in self.game.elements:
+                        if not element.held_by_player and result_zone.rect.colliderect(element.rect):
+                            objects.append(element)
+
+                    if objects or result_zone.have_object:
+                        result_zone_free = False
+                        break
+
+            if result_zone_free:
                 # Vérifier s'il existe une recette pour ces éléments
                 posed_ids = sorted([el.id for el in elements_on_craft])
 
@@ -166,13 +186,26 @@ class AutoCraftManager:
         # Créer le nouvel élément dans la zone de résultat si elle existe
         result_zone = None
         if self.game.end_craft_zones:
-            result_zone = self.game.end_craft_zones[0]  # Utiliser la première zone de résultat
+            # Vérifier chaque zone de résultat
+            for zone in self.game.end_craft_zones:
+                # Vérifier si la zone est réellement libre
+                objects = self.game.get_objects_on_zone(zone)
+                if not objects and not zone.have_object:
+                    result_zone = zone
+                    break
+                elif zone.have_object:
+                    # Si la zone est marquée comme occupée mais sans objet, corriger
+                    if not objects:
+                        zone.have_object = False
+                        result_zone = zone
+                        break
 
         if result_zone:
             # Placer le résultat dans la zone prévue
             new_element = Element(result_zone.rect.centerx, result_zone.rect.centery, result_data)
-            result_zone.have_object = True
-            print(f"DEBUG: Nouvel élément {self.matching_recipe['result_name']} créé dans la zone de résultat")
+            result_zone.have_object = True  # Marquer explicitement la zone comme occupée
+            print(
+                f"DEBUG: Nouvel élément {self.matching_recipe['result_name']} créé dans la zone de résultat {result_zone.id}")
         else:
             # Fallback au centre des zones de craft si pas de zone de résultat
             new_element = Element(self.craft_center[0], self.craft_center[1], result_data)
@@ -191,6 +224,7 @@ class AutoCraftManager:
         if hasattr(self, 'zones_with_elements'):
             delattr(self, 'zones_with_elements')
         self.game.animation_manager.remove_animation("element_crafting")
+
 
 def check_block_craft(posed_elements, recipes):
     """

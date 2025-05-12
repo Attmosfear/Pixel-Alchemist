@@ -8,6 +8,8 @@ class Zone(pygame.sprite.Sprite):
         self.id = id
         self.type = type
         self.have_object = False
+        # Ajout d'une référence au jeu, initialisée à None
+        self.game = None
 
 
 def get_front_tile(player, zones):
@@ -39,7 +41,6 @@ def get_front_tile(player, zones):
     return None
 
 
-
 def get_element_on_tile(zone, game_objects, potion_craft_state=None):
     """
     Permet de savoir quel objet est sur la zone demandée et gère les états si nécessaire
@@ -53,29 +54,28 @@ def get_element_on_tile(zone, game_objects, potion_craft_state=None):
         for obj in object_group:
             if obj.held_by_player:
                 continue
-            if zone.rect.colliderect(obj.rect):
+
+            # Amélioration de la détection de collision
+            overlap_rect = obj.rect.clip(zone.rect)
+            if overlap_rect.width > 0 and overlap_rect.height > 0:
                 # Si on a un état de crafting de potion et que c'est une zone de crafting
                 if potion_craft_state is not None and zone.type == "potioncraft_zone":
                     zone_id = zone.id
                     print(f"DEBUG: Récupération d'un objet ({object_type}) sur la zone {zone_id}")
 
                     # Réinitialiser l'état correspondant en fonction du type d'objet et de la zone
-                    if zone_id == 36 and potion_craft_state["element"] == obj:
+                    if zone_id == 35 and potion_craft_state["element"] == obj:
                         print("DEBUG: Réinitialisation de l'élément principal")
                         potion_craft_state["element"] = None
-                    elif zone_id == 38 and potion_craft_state["stone1"] == obj:
+                    elif zone_id == 33 and potion_craft_state["stone1"] == obj:
                         print("DEBUG: Réinitialisation de la pierre 1")
                         potion_craft_state["stone1"] = None
-                    elif zone_id == 39 and potion_craft_state["stone2"] == obj:
+                    elif zone_id == 34 and potion_craft_state["stone2"] == obj:
                         print("DEBUG: Réinitialisation de la pierre 2")
                         potion_craft_state["stone2"] = None
-                    elif zone_id == 37 and potion_craft_state["result"] == obj:
-                        print("DEBUG: Récupération de la potion résultante")
-                        potion_craft_state["result"] = None
 
                 # Indiquer que la zone n'a plus d'objet
                 zone.have_object = False
-
                 return obj
 
     return None
